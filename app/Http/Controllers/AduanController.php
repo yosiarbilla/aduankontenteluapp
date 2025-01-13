@@ -12,43 +12,58 @@ class AduanController extends Controller
     public function index()
     {
         $apiToken = session('api_token'); // Ambil token dari session
+        $stringToHash = $apiToken . 'List';
+        $signature = md5($stringToHash); // Generate signature sesuai dokumentasi API
 
-    try {
-        // Panggil API eksternal untuk mendapatkan data aduan
-        $response = Http::withToken($apiToken)
-            ->timeout(60)
-            ->get('https://instansi.aduankonten.id/api/v01/aduan');
+        try {
+            // Kirim permintaan GET ke API utama
+            $response = Http::withToken($apiToken)
+                ->timeout(60)
+                ->get('https://instansi.aduankonten.id/api/v01/aduan', [
+                    'signature' => $signature,
+                    'page' => 1,
+                    'max_results' => 10,
+                ]);
 
-        if ($response->successful()) {
-            $data = $response->json();
+            if ($response->successful()) {
+                $data = $response->json();
+                $aduan = $data['_items'] ?? [];
+                $kategoriMap = $this->fetchKategoriMap($apiToken);
+                // Mapping data yang akan ditampilkan di view
+                $aduan = array_map(function ($item) use ($kategoriMap){
+                    return [
+                        'tiket_id' => $item['ticket_num'] ?? '-', // Pastikan ticket_num diambil dari item
+                        'kategori' => $kategoriMap[$item['kategori']] ?? 'Tidak Diketahui',
+                        'prioritas' => $item['prioritas'] ?? 'Tidak Diketahui',
+                        'nomor_surat' => $item['nomor_surat'] ?? '-',
+                        'instansi' => $item['instansi_id'] ?? '-',
+                        'submit' => $item['_created'] ?? '-',
+                        'update' => $item['_updated'] ?? '-',
+                    ];
+                }, $aduan);
 
-            // Akses key '_items' untuk mendapatkan daftar aduan
-            $aduan = $data['_items'] ?? [];
+                return view('aduan.index', compact('aduan')); // Kirim data ke view
+            }
 
-            // Mapping data untuk memastikan semua field ada
-            $aduan = array_map(function ($item) {
-                return [
-                    'tiket_id' => $item['_id'] ?? '-',
-                    'kategori' => $item['kategori'] ?? 'Tidak Diketahui',
-                    'prioritas' => $item['prioritas'] ?? 'Tidak Diketahui',
-                    'nomor_surat' => $item['nomor_surat'] ?? '-',
-                    'instansi' => $item['instansi'] ?? '-',
-                    'submit' => $item['submit'] ?? '-',
-                    'update' => $item['update'] ?? '-',
-                ];
-            }, $aduan);
-
-            // Kirim data ke view
-            return view('aduan.index', compact('aduan'));
+            return back()->withErrors(['error' => 'Gagal mengambil data aduan dari API.']);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
         }
-
-        return back()->withErrors(['error' => 'Gagal mengambil data aduan dari API.']);
-    } catch (\Exception $e) {
-        return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
-    }
     }
     
-
+    private function fetchKategoriMap($apiToken)
+    {
+        $response = Http::withToken($apiToken)
+            ->timeout(60)
+            ->get('https://instansi.aduankonten.id/api/v01/category');
+    
+        if ($response->successful()) {
+            $data = $response->json();
+            return collect($data['_items'] ?? [])->pluck('name', '_id')->toArray();
+        }
+    
+        return [];
+    }
     public function create()
     {
         return view('aduan.create');
