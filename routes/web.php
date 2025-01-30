@@ -5,10 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Route::fallback(function() {
-//     return view ('maintenance');
-// });
-
 // Redirect root to login if not authenticated
 Route::get('/', function () {
     return auth()->check() ? redirect('/dashboard') : view('welcome');
