@@ -5,13 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
-// Route::fallback(function() {
-//     return view ('maintenance');
-// });
-
-=======
->>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
 // Redirect root to login if not authenticated
 Route::get('/', function () {
     return auth()->check() ? redirect('/dashboard') : view('welcome');
@@ -38,8 +31,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-<<<<<<< HEAD
 require __DIR__.'/auth.php';
-=======
-require __DIR__.'/auth.php';
->>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
