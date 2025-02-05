@@ -5,42 +5,62 @@
 @section('content')
 @include('layouts.sidebar')
 <style>
+<<<<<<< HEAD
     .content{
+=======
+    .content {
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
         margin-left: 110px;
         margin-top: 20px;
         padding: 20px;
     }
+<<<<<<< HEAD
     /* General Styling */
+=======
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     .card {
         border: none;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-radius: 10px;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     .card .card-title {
         font-size: 20px;
         margin-bottom: 20px;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     .card .card-text {
         font-weight: bold;
         font-size: 24px;
     }
+<<<<<<< HEAD
 
     .card .text-muted {
         font-size: 14px;
     }
 
+=======
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     .badge {
         font-size: 14px;
         padding: 5px 10px;
         border-radius: 20px;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     .table-borderless th,
     .table-borderless td {
         border: none;
     }
+<<<<<<< HEAD
 
     /* Buttons */
     .btn-success {
@@ -74,13 +94,31 @@
 .text-end button {
     min-width: 100px; /* Ukuran tombol konsisten */
 }
+=======
+    .form-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    .form-control {
+        margin-bottom: 10px;
+    }
+    .text-end button {
+        min-width: 100px;
+    }
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
 </style>
 
 <div class="content">
 <div class="container-fluid mt-6">
+<<<<<<< HEAD
   
     <!-- Statistik Aduan -->
     <h5 style= "margin-bottom: 20px;">Statistik Aduan</h5>
+=======
+    <!-- Statistik Aduan -->
+    <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card text-center">
@@ -120,6 +158,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+<<<<<<< HEAD
                     <!-- Detail Pencarian -->
                      <h5 style = "font-size: 16px; color: grey;">Detail Pencarian</h5>
                     <div class="row mb-3">
@@ -203,6 +242,49 @@
     </table>
 </div>
 
+=======
+                    <!-- Tabel Aduan -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr class="text-muted">
+                                    <th>Tiket ID</th>
+                                    <th>Kategori</th>
+                                    <th>Prioritas</th>
+                                    <th>Nomor Surat</th>
+                                    <th>Instansi</th>
+                                    <th>Submit</th>
+                                    <th>Update</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($aduan as $item)
+                                    <tr>
+                                        <td class="text-primary">{{ $item->tiket_id }}</td>
+                                        <td>{{ $item->kategori }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $item->prioritas == 'High' ? 'danger' : 'success' }}">
+                                                {{ ucfirst($item->prioritas) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $item->nomor_surat ?? '-' }}</td>
+                                        <td>{{ $item->instansi ?? '-' }}</td>
+                                        <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
+                                        <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-outline-success btn-sm">Unduh</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">Tidak ada data aduan tersedia.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
                 </div>
             </div>
         </div>
@@ -210,3 +292,19 @@
 </div>
 </div>
 @endsection
+<<<<<<< HEAD
+=======
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        confirmButtonText: 'OK',
+        timer: 3000
+    });
+    @endif
+</script>
+>>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
