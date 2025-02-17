@@ -19,8 +19,6 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-<<<<<<< HEAD
-=======
 
 # Disable index viewing
 Options -Indexes
@@ -41,4 +39,3 @@ ErrorDocument 500 /index.php
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
 </IfModule>
->>>>>>> c34b33e0997faa774a11c8df40efcfc11e0c7160
