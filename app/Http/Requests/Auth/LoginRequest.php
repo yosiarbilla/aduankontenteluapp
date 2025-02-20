@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
 
 class LoginRequest extends FormRequest
 {
@@ -29,6 +30,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', 'string'],
         ];
     }
 
@@ -39,6 +41,7 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
+        $this->validateReCaptcha();
         $this->ensureIsNotRateLimited();
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
@@ -57,6 +60,22 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
+    public function validateReCaptcha(): void
+    {
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => config('services.recaptcha.secret'),
+            'response' => $this->string('g-recaptcha-response'),
+            'ip' => $this->ip(),
+        ]);
+
+        if (!$response->json('success')) {
+            throw ValidationException::withMessages([
+                'g-recaptcha-response' => ['Verifikasi reCAPTCHA gagal. Silakan coba lagi.'],
+            ]);
+        }
+
+    }
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
