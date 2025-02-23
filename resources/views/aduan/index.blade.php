@@ -46,7 +46,7 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h5 class="card-title text-success"><i class="fas fa-clipboard-check"></i></h5>
-                    <h2 class="card-text">120</h2>
+                    <h2 class="card-text">{{ $jumlahAktif }}</h2>
                     <p class="text-muted">Aduan Aktif</p>
                 </div>
             </div>
@@ -55,7 +55,7 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h5 class="card-title text-success"><i class="fas fa-check-circle"></i></h5>
-                    <h2 class="card-text">80</h2>
+                    <h2 class="card-text">{{ $jumlahSelesai }}</h2>
                     <p class="text-muted">Aduan Selesai</p>
                 </div>
             </div>
@@ -64,7 +64,7 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h5 class="card-title text-success"><i class="fas fa-file-alt"></i></h5>
-                    <h2 class="card-text">5</h2>
+                    <h2 class="card-text">{{ $jumlahDraft }}</h2>
                     <p class="text-muted">Draf Aduan</p>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                             <tbody>
                                 @forelse ($aduan as $item)
                                     <tr>
-                                        <td class="text-primary">{{ $item->tiket_id }}</td>
+                                        <td class="text-primary">{{ $item->ticket_id }}</td>
                                         <td>{{ $item->kategori }}</td>
                                         <td>
                                             <span class="badge bg-{{ $item->prioritas == 'High' ? 'danger' : 'success' }}">

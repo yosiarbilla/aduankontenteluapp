@@ -48,8 +48,11 @@ class AduanController extends Controller{
         // }
 
         $aduan = Aduan::orderBy('created_at', 'desc')->get();
+        $jumlahAktif = Aduan::where('status', 'pending')->count();
+        $jumlahSelesai = Aduan::where('status', 'selesai')->count();
+        $jumlahDraft = Aduan::where('status', 'draft')->count();
         
-        return view('aduan.index', compact('aduan'));
+        return view('aduan.index', compact('aduan', 'jumlahAktif', 'jumlahSelesai', 'jumlahDraft'));
     }
 
     private function fetchKategoriMap($apiToken)
