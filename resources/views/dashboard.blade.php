@@ -1,48 +1,12 @@
 <style>
-    /* Sidebar */
-    .sidebar {
-        background-color: #f8f9fa;
-        height: 100vh;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 60px;
-        left: 0;
-        width: 220px;
-        overflow-y: auto;
-        z-index: 999;
-    }
-
-    .sidebar .logo {
-        max-width: 120px;
-        margin: 0 auto 20px auto;
-        display: block;
-    }
-
-    .sidebar .nav-link {
-        font-size: 16px;
-        margin-bottom: 15px;
-        color: #343a40;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-    }
-
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-        color: #28a745;
-        font-weight: bold;
-    }
-
-    .sidebar .nav-link i {
-        margin-right: 10px;
-        font-size: 18px;
-    }
-
-    /* Card Customization */
+    body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; /* Menghilangkan margin default */
+            
+        }
     .card {
         position: relative;
-        border: none;
+        border: none !important;
         height: 250px;
         overflow: hidden;
         border-radius: 10px;
@@ -99,37 +63,18 @@
     }
 
     /* Konten Utama */
-    .content {
-        margin-left: 110px;
-        margin-top: 20px;
-        padding: 20px;
+    .table-borderless th,
+    .table-borderless td {
+        border: none;
     }
 
-    /* Responsiveness */
-    @media (max-width: 768px) {
-        .sidebar {
-            position: relative;
-            height: auto;
-            width: 100%;
-            top: 0;
-        }
 
-        .content {
-            margin-left: 0;
-            margin-top: 60px;
-        }
-    }
 </style>
 
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('isi')
 
-@section('content')
-
-@include('layouts.sidebar')
-
-<div class="content">
 
     <!-- Informasi Umum -->
     <h5>Informasi Umum</h5>
@@ -139,7 +84,7 @@
                 <img src="{{ asset('images/laptop.jpg') }}" alt="Tata Cara Pengisian Aduan">
                 <div class="card-title">Tata Cara Pengisian Aduan</div>
                 <div class="card-overlay">
-                    <a href="#" class="card-link">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -148,7 +93,7 @@
                 <img src="{{ asset('images/laptop2.jpg') }}" alt="Pemberitahuan Hari Ini">
                 <div class="card-title">Pemberitahuan Hari Ini</div>
                 <div class="card-overlay">
-                    <a href="#" class="card-link">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -157,7 +102,7 @@
                 <img src="{{ asset('images/laptop3.jpg') }}" alt="Kenali Lebih Dalam TNI Siber">
                 <div class="card-title">Kenali Lebih Dalam TNI Siber</div>
                 <div class="card-overlay">
-                    <a href="#" class="card-link">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -170,7 +115,7 @@
         </div>
     <div class="card shadow-sm">
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive table-borderless">
                 <table class="table table-borderless">
                     <thead>
                         <tr>
@@ -257,6 +202,29 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Tata Cara Pengisian Aduan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
+                <ol>
+                    <li>1.  Buka menu Aduan</li>
+                    <li>2. Pilih Buat Aduan</li>
+                    <li>3. Isi form sesuai informasi yang ada</li>
+                    <li>4. Pastikan seluruh informasi telah benar</li>
+                    <li>5. Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Mengerti</button>
             </div>
         </div>
     </div>

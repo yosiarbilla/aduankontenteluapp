@@ -1,15 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Aduan')
-
-@section('content')
-@include('layouts.sidebar')
+@section('isi')
 <style>
-    .content {
-        margin-left: 110px;
-        margin-top: 20px;
-        padding: 20px;
-    }
     .card {
         border: none;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -45,7 +37,7 @@
     }
 </style>
 
-<div class="content">
+
 <div class="container-fluid mt-6">
     <!-- Statistik Aduan -->
     <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
@@ -133,7 +125,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 @endsection
 

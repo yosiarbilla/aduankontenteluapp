@@ -3,6 +3,7 @@
 use App\Http\Controllers\AduanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InstansiController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login if not authenticated
@@ -15,9 +16,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile routes (from Breeze)
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profileshow', [ProfileController::class, 'show'])->name('profile.show');
+    //Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    //Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+   // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Aduan routes
     Route::prefix('aduan')->group(function () {
@@ -29,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{aduan}', [AduanController::class, 'update'])->name('aduan.update');
         Route::delete('/{aduan}', [AduanController::class, 'destroy'])->name('aduan.destroy');
     });
+    // Instansi dan Tentang kami routes
+    Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');
+    Route::get('/tentang-kami', [InstansiController::class, 'tentangkami'])->name('tentangkami');
 });
 
 require __DIR__.'/auth.php';

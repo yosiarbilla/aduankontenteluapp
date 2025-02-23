@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Form Aduan')
-
-@section('content')
+@section('isi')
+@php
+    // Set variable di sini
+    $hideSidebar = true;
+    $hideToggle = true; 
+@endphp
 <style>
-    .content {
-        margin-top: 120px;
-    }
 
     .container {
         padding-left: 120px;
@@ -96,11 +96,23 @@
     .form-footer .btn-outline-secondary:hover {
         background-color: #f8f9fa;
     }
+    .back-button {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .back-button i {
+        margin-right: 4px;
+    }
 </style>
 
 <div class="content">
     <div class="container mt-4">
-        <a href="{{ route('dashboard') }}" class="back-button"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <a href="{{ route('dashboard') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
 
         <form action="{{ route('aduan.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
