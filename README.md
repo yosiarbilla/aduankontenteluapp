@@ -53,9 +53,10 @@ Selain teknologi utama di atas, platform ini juga memanfaatkan beberapa platform
 └── webpack.mix.js
 ```
 ## Kontributor
-@github/godwimp
-@github/yosiarbilla
-@github/ahmdfaizf
+- [github/yosiarbilla](https://github.com/yosiarbilla) (Frontend Developer)
+- [github/ahmdfaizf](https://github.com/ahmdfaizf) (Backend Developer)
+- [github/godwimp](https://github.com/godwimp) (Server Security)
+
 ---
 
 ## Lisensi
