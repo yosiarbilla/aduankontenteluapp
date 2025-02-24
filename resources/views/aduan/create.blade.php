@@ -151,13 +151,14 @@
                     <div class="col-md-6">
                         <label for="suratPermintaan" class="form-label">Surat Permintaan</label>
                         <input type="file" id="suratPermintaan" name="surat_permintaan" class="form-control">
+                        <small class="text-muted">Maksimal berukuran 1 MB, format: pdf</small>
                     </div>
                 </div>
                 <div class="row row-gap">
                     <div class="col-md-6">
                         <label for="dokumenPendukung" class="form-label">Dokumen Pendukung</label>
                         <input type="file" id="dokumenPendukung" name="dokumen_pendukung[]" class="form-control" multiple>
-                        <small class="text-muted">Maksimal 10 dokumen, format: jpg, png, doc, pdf</small>
+                        <small class="text-muted">Maksimal 10 dokumen berukuran 2 MB, format: jpg, png, doc, pdf</small>
                     </div>
                     <div class="col-md-6">
                         <label for="catatanTambahan" class="form-label">Catatan Tambahan</label>
@@ -188,6 +189,7 @@
                     <div class="col-md-6">
                         <label for="screenshot" class="form-label">Unggah Screenshot</label>
                         <input type="file" id="screenshot" name="screenshot" class="form-control">
+                        <small class="text-muted">Maksimal berukuran 1 MB, format: pdf, png</small>
                     </div>
                     <div class="col-md-6">
                         <label for="deskripsiKonten" class="form-label">Deskripsi Konten</label>
