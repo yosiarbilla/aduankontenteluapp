@@ -110,7 +110,7 @@
                                         <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
                                         <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-outline-success btn-sm">Unduh</a>
+                                            <a href="{{route('aduan.export-pdf', $item->id)}}" target="_blank" class="btn btn-outline-success btn-sm">Unduh</a>
                                         </td>
                                     </tr>
                                 @empty

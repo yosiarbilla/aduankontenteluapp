@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{aduan}/edit', [AduanController::class, 'edit'])->name('aduan.edit');
         Route::put('/{aduan}', [AduanController::class, 'update'])->name('aduan.update');
         Route::delete('/{aduan}', [AduanController::class, 'destroy'])->name('aduan.destroy');
+        Route::get('aduan/export-pdf/{id}', [AduanController::class, 'exportPdf'])->name('aduan.export-pdf');
     });
     // Instansi dan Tentang kami routes
     Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');
