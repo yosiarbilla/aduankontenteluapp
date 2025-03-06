@@ -19,19 +19,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profileshow', [ProfileController::class, 'show'])->name('profile.show');
     //Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     //Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-   // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    //Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Aduan routes
     Route::prefix('aduan')->group(function () {
         Route::get('/', [AduanController::class, 'index'])->name('aduan.index');
         Route::get('/create', [AduanController::class, 'create'])->name('aduan.create');
-        Route::post('/', [AduanController::class, 'store'])->name('aduan.store');
+        Route::post('/store', [AduanController::class, 'store'])->name('aduan.store');
         Route::get('/{aduan}', [AduanController::class, 'show'])->name('aduan.show');
         Route::get('/{aduan}/edit', [AduanController::class, 'edit'])->name('aduan.edit');
         Route::put('/{aduan}', [AduanController::class, 'update'])->name('aduan.update');
         Route::delete('/{aduan}', [AduanController::class, 'destroy'])->name('aduan.destroy');
-        Route::get('aduan/export-pdf/{id}', [AduanController::class, 'exportPdf'])->name('aduan.export-pdf');
-    });
+        Route::get('/export-pdf/{id}', [AduanController::class, 'exportPdf'])->name('aduan.export-pdf');
+        Route::put('/{aduan}/kirim', [AduanController::class, 'kirim'])->name('aduan.kirim'); // Route untuk kirim
+        Route::put('/{aduan}/approve', [AduanController::class, 'approve'])->name('aduan.approve'); // Route baru untuk approval
+    });        
     // Instansi dan Tentang kami routes
     Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');
     Route::get('/tentang-kami', [InstansiController::class, 'tentangkami'])->name('tentangkami');

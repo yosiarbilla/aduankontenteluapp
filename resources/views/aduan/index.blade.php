@@ -41,35 +41,44 @@
 <div class="container-fluid mt-6">
     <!-- Statistik Aduan -->
     <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-success"><i class="fas fa-clipboard-check"></i></h5>
-                    <h2 class="card-text">{{ $jumlahAktif }}</h2>
-                    <p class="text-muted">Aduan Aktif</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-success"><i class="fas fa-check-circle"></i></h5>
-                    <h2 class="card-text">{{ $jumlahSelesai }}</h2>
-                    <p class="text-muted">Aduan Selesai</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-success"><i class="fas fa-file-alt"></i></h5>
-                    <h2 class="card-text">{{ $jumlahDraft }}</h2>
-                    <p class="text-muted">Draf Aduan</p>
-                </div>
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-warning"><i class="fas fa-clock"></i></h5>
+                <h2 class="card-text">{{ $jumlahPending }}</h2>
+                <p class="text-muted">Aduan Pending</p>
             </div>
         </div>
     </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-primary"><i class="fas fa-clipboard-check"></i></h5>
+                <h2 class="card-text">{{ $jumlahAktif }}</h2>
+                <p class="text-muted">Aduan Aktif</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="fas fa-check-circle"></i></h5>
+                <h2 class="card-text">{{ $jumlahSelesai }}</h2>
+                <p class="text-muted">Aduan Selesai</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-secondary"><i class="fas fa-file-alt"></i></h5>
+                <h2 class="card-text">{{ $jumlahDraft }}</h2>
+                <p class="text-muted">Draf Aduan</p>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Semua Aduan -->
     <div class="row">
@@ -110,8 +119,10 @@
                                         <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
                                         <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
                                         <td>
+                                            <a href="{{route('aduan.show', $item->id)}}" class="btn btn-outline-success btn-sm">Detail</a>
                                             <a href="{{route('aduan.export-pdf', $item->id)}}" target="_blank" class="btn btn-outline-success btn-sm">Unduh</a>
                                         </td>
+                                        
                                     </tr>
                                 @empty
                                     <tr>
@@ -127,6 +138,12 @@
     </div>
 </div>
 @endsection
+@if(session('success'))
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
+@endif
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

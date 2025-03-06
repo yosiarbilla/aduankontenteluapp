@@ -6,9 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 class Aduan extends Model
 {
     use HasFactory;
+
     protected $table = 'aduan';
 
     protected $fillable = [
@@ -27,6 +34,10 @@ class Aduan extends Model
         'status'
     ];
 
+    protected $casts = [
+        'dokumen_pendukung' => 'array', // Biar bisa simpan array JSON
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -40,3 +51,5 @@ class Aduan extends Model
         });
     }
 }
+
+
