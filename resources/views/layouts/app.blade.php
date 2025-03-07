@@ -40,89 +40,90 @@
     @endphp
 	@if(!$hideSidebar)
 	<!-- SIDEBAR -->
-	<section 
-	  id="sidebar" 
-	  style="
-	    display: flex; 
-	    flex-direction: column; 
-	    height: 100vh; /* Agar sidebar memenuhi tinggi layar */
-	  "
-	>
-	  <div class="text-center">
-	    <img 
-	      src="{{ asset('images/logo.png') }}" 
-	      alt="Logo TNI Siber" 
-	      class="logo img-fluid" 
-	      style="width: 150px; height: auto;"
-	    >
-	  </div>
-	  <ul 
-	    class="side-menu" 
-	    style="
-	      display: flex; 
-	      flex-direction: column; 
-	      padding: 0; 
-	      margin:40px;
-	      flex: 1; /* Biarkan ul melebar ke sisa ruang */
-	    "
-	  >
-	    <!-- Beranda -->
-	    <li>
-	      <a 
-	        href="{{ route('dashboard') }}" 
-	        class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
-	        style="display: inline-flex; align-items: center; gap: 8px;"
-	      >
-	        <i class="fas fa-home icon"></i> 
-	        Beranda
-	      </a>
-	    </li>
-	    <!-- Aduan -->
-	    <li>
-	      <a 
-	        href="{{ route('aduan.index') }}" 
-	        class="nav-link {{ request()->routeIs('aduan.index') ? 'active' : '' }}"
-	        style="display: inline-flex; align-items: center; gap: 8px;"
-	      >
-	        <i class="fas fa-file-alt icon"></i> 
-	        Aduan
-	      </a>
-	    </li>
-	    <!-- Instansi -->
-	    <li>
-	      <a 
-	        href="{{ route('instansi') }}" 
-	        class="nav-link {{ request()->routeIs('instansi') ? 'active' : '' }}"
-	        style="display: inline-flex; align-items: center; gap: 8px;"
-	      >
-	        <i class="fas fa-building icon"></i> 
-	        Instansi
-	      </a>
-	    </li>
-	    <!-- Log Out di Bawah -->
-	    <li 
-	      style="
-	        margin-top: auto; 
-	      "
-	    >
-	      <a 
-	        href="{{ route('logout') }}" 
-	        class="nav-link"
-	        style="
-	          display: inline-flex; 
-	          align-items: center; 
-	          gap: 8px;
-	        "
-	      >
-	        <i class="fas fa-sign-out-alt icon"></i> 
-	        Log Out
-	      </a>
-	    </li>
-	  </ul>
-	</section>
-	@endif
-	<!-- END SIDEBAR -->
-
+<section 
+  id="sidebar" 
+  style="
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh; /* Agar sidebar memenuhi tinggi layar */
+  "
+>
+  <div class="text-center" style="margin-bottom: 20px; padding-top: 15px;">
+    <img 
+      src="{{ asset('images/logo.png') }}" 
+      alt="Logo TNI Siber" 
+      class="logo img-fluid" 
+      style="width: 80%; max-width: 150px; height: auto;"
+    >
+  </div>
+  <ul 
+    class="side-menu" 
+    style="
+      display: flex; 
+      flex-direction: column; 
+      padding: 0; 
+      margin: 0;
+      flex: 1; /* Biarkan ul melebar ke sisa ruang */
+    "
+  >
+    <!-- Beranda -->
+    <li>
+      <a 
+        href="{{ route('dashboard') }}" 
+        class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+        style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;"
+      >
+        <i class="fas fa-home icon" style="width: 20px; text-align: center; margin-right: 10px;"></i> 
+        <span class="menu-text">Beranda</span>
+      </a>
+    </li>
+    <!-- Aduan -->
+    <li>
+      <a 
+        href="{{ route('aduan.index') }}" 
+        class="nav-link {{ request()->routeIs('aduan.index') ? 'active' : '' }}"
+        style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;"
+      >
+        <i class="fas fa-file-alt icon" style="width: 20px; text-align: center; margin-right: 10px;"></i> 
+        <span class="menu-text">Aduan</span>
+      </a>
+    </li>
+    <!-- Instansi -->
+    <li>
+      <a 
+        href="{{ route('instansi') }}" 
+        class="nav-link {{ request()->routeIs('instansi') ? 'active' : '' }}"
+        style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;"
+      >
+        <i class="fas fa-building icon" style="width: 20px; text-align: center; margin-right: 10px;"></i> 
+        <span class="menu-text">Instansi</span>
+      </a>
+    </li>
+    <!-- Log Out di Bawah -->
+    <li 
+      style="
+        margin-top: auto; 
+        margin-bottom: 20px;
+      "
+    >
+      <a 
+        href="{{ route('logout') }}" 
+        class="nav-link"
+        style="
+          display: flex; 
+          align-items: center; 
+          padding: 12px 20px;
+          justify-content: flex-start;
+        "
+      >
+        <i class="fas fa-sign-out-alt icon" style="width: 20px; text-align: center; margin-right: 10px;"></i> 
+        <span class="menu-text">Keluar</span>
+      </a>
+    </li>
+  </ul>
+</section>
+@endif
+<!-- END SIDEBAR -->
 	<!-- CONTENT -->
 	<section id="content">
 		<!-- NAVBAR -->

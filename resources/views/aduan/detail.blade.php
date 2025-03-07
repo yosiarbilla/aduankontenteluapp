@@ -28,12 +28,6 @@
         text-align: left;
     }
 
-    img {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-top: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
 
     .btn-aksi {
         margin-top: 20px;

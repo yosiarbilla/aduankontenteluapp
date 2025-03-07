@@ -149,6 +149,19 @@ li {
 #sidebar.hide .divider {
 	text-align: center;
 }
+/* CSS untuk menangani tampilan saat sidebar diciutkan */
+#sidebar.hide .menu-text {
+	display: none;
+  }
+  
+  #sidebar.hide .side-menu li a {
+	justify-content: center;
+	padding: 12px 0;
+  }
+  
+  #sidebar.hide .icon {
+	margin-right: 0;
+  }
 #sidebar .side-dropdown {
 	padding-left: 54px;
 	max-height: 0;

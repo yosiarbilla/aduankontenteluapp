@@ -6,8 +6,7 @@ use App\Models\Aduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use Barryvdh\DomPDF\Facade\Pdf;
-
+use Barryvdh\DomPDF\Facade as PDF;
 
 class AduanController extends Controller{
     public function index()
@@ -164,13 +163,14 @@ class AduanController extends Controller{
 
     public function exportPdf($id){
         $aduan = Aduan::findOrFail($id);
-
-        $pdf = Pdf::setOptions(['isRemoteEnabled' => true]) // Perbaiki operator '->' ke '=>'
-            ->loadView('aduan.export-pdf', compact('aduan'))
-            ->setPaper('a4', 'landscape');
-
-        return $pdf->stream("{$aduan->ticket_id}.pdf", ['Attachment' => 0]); // Perbaiki operator '->' ke '=>'
+    
+        $pdf = Pdf::setOptions(['isRemoteEnabled' => true]) // Gunakan 'Facades\Pdf'
+                ->loadView('aduan.export-pdf', compact('aduan'))
+                ->setPaper('a4', 'landscape');
+    
+        return $pdf->stream("{$aduan->tiket_id}.pdf", ['Attachment' => 0]); // Pastikan variabelnya benar
     }
+    
 
     public function show($id){
         $detailAduan = Aduan::findOrFail($id);

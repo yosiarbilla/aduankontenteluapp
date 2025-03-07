@@ -35,10 +35,29 @@
     .text-end button {
         min-width: 100px;
     }
+    @media (max-width: 768px) {
+       
+        .card {
+            margin-bottom: 20px; /* Beri jarak antar kartu */
+            padding: 15px; /* Tambahkan padding agar lebih rapi */
+        }
+
+        .col-md-3 {
+            width: 100%; /* Buat setiap card menjadi full width agar tidak kecil */
+        }
+    }
 </style>
 
 
 <div class="container-fluid mt-6">
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+
     <!-- Statistik Aduan -->
     <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
 <div class="row mb-4">
@@ -137,15 +156,11 @@
         </div>
     </div>
 </div>
-@endsection
-@if(session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     @if(session('success'))
     Swal.fire({
@@ -153,7 +168,10 @@
         title: 'Berhasil!',
         text: '{{ session('success') }}',
         confirmButtonText: 'OK',
+        showCloseButton: true, // Menampilkan tombol X untuk menutup alert
         timer: 3000
     });
     @endif
 </script>
+@endsection
+
