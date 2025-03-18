@@ -6,9 +6,10 @@ use App\Models\Aduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
-class AduanController extends Controller{
+class AduanController extends Controller
+{
     public function index()
     {
         // $apiToken = session('api_token');
@@ -53,21 +54,21 @@ class AduanController extends Controller{
         $jumlahSelesai = Aduan::where('status', 'selesai')->count();
         $jumlahDraft = Aduan::where('status', 'draft')->count();
         $jumlahPending = Aduan::where('status', 'pending')->count();
-        
+
         return view('aduan.index', compact('aduan', 'jumlahAktif', 'jumlahSelesai', 'jumlahDraft', 'jumlahPending'));
     }
 
     private function fetchKategoriMap($apiToken)
     {
-        $response = Http::withToken($apiToken)
-            ->timeout(60)
-            ->get('https://instansi.aduankonten.id/api/v01/category');
-    
+        $response = Http::withToken($apiToken)->timeout(60)->get('https://instansi.aduankonten.id/api/v01/category');
+
         if ($response->successful()) {
             $data = $response->json();
-            return collect($data['_items'] ?? [])->pluck('name', '_id')->toArray();
+            return collect($data['_items'] ?? [])
+                ->pluck('name', '_id')
+                ->toArray();
         }
-    
+
         return [];
     }
     public function create()
@@ -86,56 +87,136 @@ class AduanController extends Controller{
             'platform' => 'nullable',
             'url_link' => 'nullable|url',
             'deskripsi_konten' => 'nullable',
+            'pasal' => 'nullable|array',
+            'pasal.*' => 'nullable|string',
+            'platform2' => 'nullable',
+            'url_link2' => 'nullable|url',
+            'deskripsi_konten2' => 'nullable',
+            'pasal2' => 'nullable|array',
+            'pasal2.*' => 'nullable|string',
         ];
-        
+
         // File validation rules
         $fileRules = [
             'surat_permintaan' => 'required|file|mimes:pdf|max:5120',
             'dokumen_pendukung.*' => 'nullable|file|mimes:jpg,jpeg,png,doc,pdf|max:5120',
-            'screenshot' => 'nullable|file|mimes:pdf,png|max:5120',
+            'screenshot' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'screenshot2' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'csv_file' => 'nullable|file|mimes:csv,txt|max:5120',
         ];
-        
+
         // Validate basic inputs first
         $validator = \Validator::make($request->all(), $basicRules);
-        
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-        
+
         // Now validate files with custom error messages
         $fileValidator = \Validator::make($request->all(), $fileRules, [
             'surat_permintaan.mimes' => 'Format surat permintaan harus PDF.',
             'surat_permintaan.max' => 'Ukuran surat permintaan maksimal 5MB.',
             'dokumen_pendukung.*.mimes' => 'Format dokumen pendukung harus JPG, PNG, DOC, atau PDF.',
             'dokumen_pendukung.*.max' => 'Ukuran dokumen pendukung maksimal 5MB.',
-            'screenshot.mimes' => 'Format screenshot harus PDF atau PNG.',
+            'screenshot.mimes' => 'Format screenshot harus JPG, PNG atau PDF.',
             'screenshot.max' => 'Ukuran screenshot maksimal 5MB.',
+            'screenshot2.mimes' => 'Format screenshot URL 2 harus JPG, PNG atau PDF.',
+            'screenshot2.max' => 'Ukuran screenshot URL 2 maksimal 5MB.',
+            'csv_file.mimes' => 'Format file harus CSV.',
+            'csv_file.max' => 'Ukuran file CSV maksimal 5MB.',
         ]);
-        
+
         if ($fileValidator->fails()) {
             // Return with specific file error messages and preserve input
             return back()->withErrors($fileValidator)->withInput();
         }
-        
+
         // Set default status
         $status = 'draft';
-        
+
         // Check which button was clicked
         if ($request->input('action') == 'pending') {
             $status = 'pending';
         }
-        
+
         // Create new Aduan instance
         $aduan = new Aduan();
         $aduan->kategori = $request->kategori;
         $aduan->prioritas = $request->prioritas;
         $aduan->nomor_surat = $request->nomor_surat;
         $aduan->catatan_tambahan = $request->catatan_tambahan;
-        $aduan->platform = $request->platform;
-        $aduan->url_link = $request->url_link;
-        $aduan->deskripsi_konten = $request->deskripsi_konten;
         $aduan->status = $status;
-        
+        $aduan->user_id = auth()->id();
+        // Prepare data array for URLs and platform details
+        $urlData = [];
+
+        // First URL data
+        if ($request->filled('platform') || $request->filled('url_link')) {
+            $urlEntry = [
+                'platform' => $request->platform,
+                'url_link' => $request->url_link,
+                'deskripsi_konten' => $request->deskripsi_konten,
+                'pasal' => $request->pasal ?? [],
+            ];
+
+            // Handle screenshot upload for URL 1
+            if ($request->hasFile('screenshot')) {
+                $urlEntry['screenshot'] = $request->file('screenshot')->store('screenshots', 'public');
+            }
+
+            $urlData[] = $urlEntry;
+        }
+
+        // Second URL data (if provided manually)
+        if ($request->filled('platform2') || $request->filled('url_link2')) {
+            $urlEntry = [
+                'platform' => $request->platform2,
+                'url_link' => $request->url_link2,
+                'deskripsi_konten' => $request->deskripsi_konten2,
+                'pasal' => $request->pasal2 ?? [],
+            ];
+
+            // Handle screenshot upload for URL 2
+            if ($request->hasFile('screenshot2')) {
+                $urlEntry['screenshot'] = $request->file('screenshot2')->store('screenshots', 'public');
+            }
+
+            $urlData[] = $urlEntry;
+        }
+
+        // Handle CSV upload if provided
+        if ($request->hasFile('csv_file')) {
+            $path = $request->file('csv_file')->getRealPath();
+            $csvData = array_map('str_getcsv', file($path));
+
+            // Assume first row is header, so start from second row
+            $headers = array_shift($csvData);
+
+            foreach ($csvData as $row) {
+                // Map CSV row to associative array using headers
+                $rowData = array_combine($headers, $row);
+
+                // Add to URL data if at least platform or URL is present
+                if (!empty($rowData['platform']) || !empty($rowData['url_link'])) {
+                    // Handle pasal as array from CSV (assuming comma-separated values in CSV)
+                    $pasalData = !empty($rowData['pasal']) ? explode(',', $rowData['pasal']) : [];
+
+                    $urlEntry = [
+                        'platform' => $rowData['platform'] ?? null,
+                        'url_link' => $rowData['url_link'] ?? null,
+                        'deskripsi_konten' => $rowData['deskripsi_konten'] ?? null,
+                        'pasal' => $pasalData,
+                        // No screenshot for CSV entries
+                    ];
+
+                    $urlData[] = $urlEntry;
+                }
+            }
+        }
+
+        // Save URL data as JSON
+        $aduan->url_data = json_encode($urlData);
+
         // Upload Surat Permintaan
         if ($request->hasFile('surat_permintaan')) {
             $aduan->surat_permintaan = $request->file('surat_permintaan')->store('surat_permintaan', 'public');
@@ -147,12 +228,7 @@ class AduanController extends Controller{
             foreach ($request->file('dokumen_pendukung') as $file) {
                 $dokumen[] = $file->store('dokumen_pendukung', 'public');
             }
-            $aduan->dokumen_pendukung = $dokumen; // Will be cast to JSON by model
-        }
-
-        // Upload Screenshot
-        if ($request->hasFile('screenshot')) {
-            $aduan->screenshot = $request->file('screenshot')->store('screenshots', 'public');
+            $aduan->dokumen_pendukung = json_encode($dokumen); // Store as JSON string
         }
 
         // Save to database
@@ -161,20 +237,26 @@ class AduanController extends Controller{
         return redirect()->route('aduan.index')->with('success', 'Laporan berhasil disimpan.');
     }
 
-    public function exportPdf($id){
-        $aduan = Aduan::findOrFail($id);
-    
-        $pdf = Pdf::setOptions(['isRemoteEnabled' => true]) // Gunakan 'Facades\Pdf'
-                ->loadView('aduan.export-pdf', compact('aduan'))
-                ->setPaper('a4', 'landscape');
-    
-        return $pdf->stream("{$aduan->tiket_id}.pdf", ['Attachment' => 0]); // Pastikan variabelnya benar
-    }
-    
+    public function exportPdf($id)
+{
+    $aduan = Aduan::with('user')->findOrFail($id);
 
-    public function show($id){
+    $pdf = PDF::setOptions(['isRemoteEnabled' => true])
+        ->loadView('aduan.export-pdf', compact('aduan'))
+        ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
+
+    return $pdf->stream("{$aduan->ticket_id}.pdf", ['Attachment' => 0]);
+}
+
+    public function show($id)
+    {
         $detailAduan = Aduan::findOrFail($id);
-        return view('aduan.detail', compact('detailAduan'));
+
+        // Decode url_data JSON menjadi array
+        $urlData = json_decode($detailAduan->url_data, true);
+
+        // Kirim data ke view
+        return view('aduan.detail', compact('detailAduan', 'urlData'));
     }
 
     public function edit(Aduan $aduan)
@@ -183,153 +265,198 @@ class AduanController extends Controller{
             return redirect()->route('aduan.index')->with('error', 'Data tidak bisa diedit!');
         }
 
-        return view('aduan.edit', compact('aduan'));
+        // Decode url_data JSON menjadi array
+        $urlData = json_decode($aduan->url_data, true);
+
+        // Kirim data ke view
+        return view('aduan.edit', compact('aduan', 'urlData'));
     }
 
     public function kirim($id)
     {
         $aduan = Aduan::findOrFail($id);
-        
+
         // Pastikan hanya aduan dengan status draft yang bisa dikirim
         if ($aduan->status != 'draft') {
-            return redirect()->route('aduan.index')
-                ->with('error', 'Hanya aduan dengan status draft yang dapat dikirim!');
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat dikirim!');
         }
-        
+
         // Update status menjadi pending
         $aduan->status = 'pending';
         $aduan->save();
-        
+
         // Logika tambahan jika diperlukan (notifikasi, log, dll)
-        
-        return redirect()->route('aduan.index')
-            ->with('success', 'Aduan berhasil dikirim dan status diubah menjadi pending.');
+
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dikirim dan status diubah menjadi pending.');
     }
 
     // Tambahkan juga method update jika belum ada
     public function update(Request $request, Aduan $aduan)
     {
-        // Pastikan hanya aduan dengan status draft yang bisa diedit
+        // Log the entire request data for debugging
+        \Log::info('Request data:', $request->all());
+
+        // Verify the aduan status first
         if ($aduan->status != 'draft') {
-            return redirect()->route('aduan.index')
-                ->with('error', 'Data tidak bisa diedit!');
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat diedit!');
         }
-        
-        // Validasi input
+
+        // Validation rules
         $basicRules = [
             'kategori' => 'required',
             'prioritas' => 'required|in:Normal,Urgent,High',
             'nomor_surat' => 'required',
             'catatan_tambahan' => 'nullable',
-            'platform' => 'nullable',
-            'url_link' => 'nullable|url',
-            'deskripsi_konten' => 'nullable',
         ];
-        
-        // File validation rules - hanya validasi jika ada file baru
+
+        // File validation rules
         $fileRules = [];
-        
         if ($request->hasFile('surat_permintaan')) {
             $fileRules['surat_permintaan'] = 'file|mimes:pdf|max:5120';
         }
-        
         if ($request->hasFile('dokumen_pendukung')) {
             $fileRules['dokumen_pendukung.*'] = 'file|mimes:jpg,jpeg,png,doc,pdf|max:5120';
         }
-        
         if ($request->hasFile('screenshot')) {
-            $fileRules['screenshot'] = 'file|mimes:pdf,png|max:5120';
+            $fileRules['screenshot.*'] = 'file|mimes:jpg,jpeg,png,pdf|max:5120';
         }
-        
-        // Gabungkan validasi
+
+        // Combine validation rules
         $rules = array_merge($basicRules, $fileRules);
-        
+
         $validator = \Validator::make($request->all(), $rules);
-        
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-        
-        // Update data
+
+        // Update basic fields
         $aduan->kategori = $request->kategori;
         $aduan->prioritas = $request->prioritas;
         $aduan->nomor_surat = $request->nomor_surat;
         $aduan->catatan_tambahan = $request->catatan_tambahan;
-        $aduan->platform = $request->platform;
-        $aduan->url_link = $request->url_link;
-        $aduan->deskripsi_konten = $request->deskripsi_konten;
-        
-        // Upload Surat Permintaan jika ada
+
+        // Prepare URL data
+        $urlData = [];
+
+        // Handle platform data - ensure we're properly processing arrays
+        if ($request->has('platform') && $request->has('url_link')) {
+            $platforms = $request->platform;
+            $urlLinks = $request->url_link;
+            $deskripsis = $request->deskripsi_konten;
+            $screenshots = $request->file('screenshot');
+
+            // Make sure we're dealing with arrays
+            if (!is_array($platforms)) {
+                $platforms = [$platforms];
+            }
+            if (!is_array($urlLinks)) {
+                $urlLinks = [$urlLinks];
+            }
+            if (!is_array($deskripsis)) {
+                $deskripsis = [$deskripsis];
+            }
+
+            // Process each platform entry
+            for ($i = 0; $i < count($platforms); $i++) {
+                if (empty($platforms[$i]) && empty($urlLinks[$i])) {
+                    continue;
+                }
+
+                $urlEntry = [
+                    'platform' => $platforms[$i] ?? null,
+                    'url_link' => $urlLinks[$i] ?? null,
+                    'deskripsi_konten' => $deskripsis[$i] ?? null,
+                    'pasal' => isset($request->pasal[$i]) ? $request->pasal[$i] : [],
+                ];
+
+                // Handle screenshot upload
+                if ($screenshots && isset($screenshots[$i])) {
+                    $urlEntry['screenshot'] = $screenshots[$i]->store('screenshots', 'public');
+                } elseif (isset($urlData[$i]['screenshot'])) {
+                    // Keep existing screenshot if available
+                    $oldUrlData = json_decode($aduan->url_data, true);
+                    if (isset($oldUrlData[$i]['screenshot'])) {
+                        $urlEntry['screenshot'] = $oldUrlData[$i]['screenshot'];
+                    }
+                }
+
+                $urlData[] = $urlEntry;
+            }
+        }
+
+        // Update URL data
+        $aduan->url_data = json_encode($urlData);
+
+        // Handle file uploads
         if ($request->hasFile('surat_permintaan')) {
-            // Hapus file lama jika ada
+            // Delete old file if exists
             if ($aduan->surat_permintaan) {
                 Storage::disk('public')->delete($aduan->surat_permintaan);
             }
             $aduan->surat_permintaan = $request->file('surat_permintaan')->store('surat_permintaan', 'public');
         }
 
-        // Upload Dokumen Pendukung jika ada
+        // Handle document uploads
         if ($request->hasFile('dokumen_pendukung')) {
-            // Hapus file lama jika ada
+            // Delete old documents
             if (!empty($aduan->dokumen_pendukung)) {
-                foreach ($aduan->dokumen_pendukung as $doc) {
-                    Storage::disk('public')->delete($doc);
+                $oldDocs = is_string($aduan->dokumen_pendukung) ? json_decode($aduan->dokumen_pendukung, true) : $aduan->dokumen_pendukung;
+
+                if (is_array($oldDocs)) {
+                    foreach ($oldDocs as $doc) {
+                        Storage::disk('public')->delete($doc);
+                    }
                 }
             }
-            
+
+            // Store new documents
             $dokumen = [];
             foreach ($request->file('dokumen_pendukung') as $file) {
                 $dokumen[] = $file->store('dokumen_pendukung', 'public');
             }
-            $aduan->dokumen_pendukung = $dokumen;
+            $aduan->dokumen_pendukung = json_encode($dokumen);
         }
 
-        // Upload Screenshot jika ada
-        if ($request->hasFile('screenshot')) {
-            // Hapus file lama jika ada
-            if ($aduan->screenshot) {
-                Storage::disk('public')->delete($aduan->screenshot);
-            }
-            $aduan->screenshot = $request->file('screenshot')->store('screenshots', 'public');
+        // Set status based on clicked button
+        $aduan->status = $request->input('action') == 'pending' ? 'pending' : 'draft';
+
+        // Save changes with exception handling
+        try {
+            $aduan->save();
+            return redirect()
+                ->route('aduan.show', ['aduan' => $aduan->id])
+                ->with('success', 'Aduan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Log::error('Save error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
-
-        // Set status berdasarkan tombol yang diklik
-        if ($request->input('action') == 'pending') {
-            $aduan->status = 'pending';
-        }
-
-        // Simpan perubahan
-        $aduan->save();
-
-        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil diperbarui.');
     }
 
     public function destroy(Aduan $aduan)
     {
         // Pastikan hanya aduan dengan status tertentu yang bisa dihapus
         if ($aduan->status != 'draft') {
-            return redirect()->route('aduan.index')
-                ->with('error', 'Hanya aduan dengan status draft yang dapat dihapus!');
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat dihapus!');
         }
-        
+
         // Hapus file-file terkait
         if ($aduan->surat_permintaan) {
             Storage::disk('public')->delete($aduan->surat_permintaan);
         }
-        
+
         if (!empty($aduan->dokumen_pendukung)) {
             foreach ($aduan->dokumen_pendukung as $doc) {
                 Storage::disk('public')->delete($doc);
             }
         }
-        
+
         if ($aduan->screenshot) {
             Storage::disk('public')->delete($aduan->screenshot);
         }
-        
+
         // Hapus data
         $aduan->delete();
-        
+
         return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dihapus.');
     }
 
@@ -338,15 +465,13 @@ class AduanController extends Controller{
     {
         // Pastikan hanya aduan dengan status pending yang bisa disetujui
         if ($aduan->status != 'pending') {
-            return redirect()->route('aduan.index')
-                ->with('error', 'Hanya aduan dengan status pending yang dapat disetujui!');
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status pending yang dapat disetujui!');
         }
-        
+
         // Update status menjadi active
         $aduan->status = 'active';
         $aduan->save();
-        
-        return redirect()->route('aduan.index')
-            ->with('success', 'Aduan berhasil disetujui dan status diubah menjadi active.');
+
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil disetujui dan status diubah menjadi active.');
     }
 }
