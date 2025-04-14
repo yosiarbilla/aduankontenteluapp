@@ -6,11 +6,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InstansiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 // Redirect root to login if not authenticated
 Route::get('/', function () {
-    return auth()->check() ? redirect('/dashboard') : view('welcome');
+    // Updated: direct redirect to login
+    return auth()->check() ? redirect('/dashboard') : redirect('/login');
 });
 
 // Routes yang memerlukan autentikasi
@@ -20,9 +20,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Profile routes (from Breeze)
     Route::get('/profileshow', [ProfileController::class, 'show'])->name('profile.show');
-    //Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    //Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    //Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Instansi dan Tentang kami routes - dapat diakses semua user terautentikasi
     Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');
