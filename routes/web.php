@@ -5,11 +5,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InstansiController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 // Redirect root to login if not authenticated
 Route::get('/', function () {
-    return auth()->check() ? redirect('/dashboard') : view('welcome');
+    // Updated: direct redirect to login
+    return auth()->check() ? redirect('/dashboard') : redirect('/login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -18,9 +18,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Profile routes (from Breeze)
     Route::get('/profileshow', [ProfileController::class, 'show'])->name('profile.show');
-    //Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    //Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    //Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Aduan routes
     Route::prefix('aduan')->group(function () {
@@ -34,7 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export-pdf/{id}', [AduanController::class, 'exportPdf'])->name('aduan.export-pdf');
         Route::put('/{aduan}/kirim', [AduanController::class, 'kirim'])->name('aduan.kirim'); // Route untuk kirim
         Route::put('/{aduan}/approve', [AduanController::class, 'approve'])->name('aduan.approve'); // Route baru untuk approval
-    });        
+    }); 
+
     // Instansi dan Tentang kami routes
     Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');
     Route::get('/tentang-kami', [InstansiController::class, 'tentangkami'])->name('tentangkami');
