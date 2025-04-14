@@ -175,6 +175,13 @@
     .btn-secondary:hover {
         background-color: #5a6268;
     }
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
 </style>
 
 <div class="container">
@@ -320,12 +327,15 @@
 
     <!-- Tombol Aksi -->
     <div class="btn-aksi">
-        @if($detailAduan->status == 'draft')
+        <!-- Button Edit hanya muncul jika status draft dan user adalah pemilik aduan -->
+        @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
             <a href="{{ route('aduan.edit', $detailAduan->id) }}" class="btn btn-primary">
                 <i class="bi bi-pencil-square"></i> Edit
             </a>
         @endif
-        @if($detailAduan->status == 'draft')
+        
+        <!-- Button Kirim hanya muncul jika status draft dan user adalah pemilik aduan -->
+        @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
             <form action="{{ route('aduan.kirim', $detailAduan->id) }}" method="POST" style="display: inline;">
                 @csrf
                 @method('PUT')
@@ -334,7 +344,9 @@
                 </button>
             </form>
         @endif
-        @if($detailAduan->status == 'pending')
+        
+        <!-- Button Disetujui hanya muncul untuk manager dan jika status pending -->
+        @if($detailAduan->status == 'pending' && Auth::user()->role->id == 2)
             <form action="{{ route('aduan.approve', $detailAduan->id) }}" method="POST" style="display: inline;">
                 @csrf
                 @method('PUT')
@@ -342,13 +354,27 @@
                     <i class="bi bi-check-circle"></i> Disetujui
                 </button>
             </form>
+            
+            <!-- Button Ditolak hanya muncul untuk manager dan jika status pending -->
+            <form action="{{ route('aduan.reject', $detailAduan->id) }}" method="POST" style="display: inline;">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-x-circle"></i> Ditolak
+                </button>
+            </form>
         @endif
+        
+        <!-- Button Export PDF untuk semua user -->
         <a href="{{ route('aduan.export-pdf', $detailAduan->id) }}" class="btn btn-info">
             <i class="bi bi-file-pdf"></i> Export PDF
         </a>
+        
+        <!-- Button Kembali untuk semua user -->
         <a href="{{ route('aduan.index') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
+        <!-- Tambahkan di awal view untuk debugging -->
     </div>
 </div>
 @endsection

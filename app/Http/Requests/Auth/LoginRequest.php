@@ -61,21 +61,23 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
 
-    public function validateReCaptcha(): void
-    {
-        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => config('services.recaptcha.secret'),
-            'response' => $this->string('g-recaptcha-response'),
-            'ip' => $this->ip(),
-        ]);
-
-        if (!$response->json('success')) {
-            throw ValidationException::withMessages([
-                'g-recaptcha-response' => ['Verifikasi reCAPTCHA gagal. Silakan coba lagi.'],
-            ]);
-        }
-
-    }
+     public function validateReCaptcha(): void
+     {
+         $response = Http::withOptions([
+             'verify' => false, // Untuk development saja!
+             // Alternatif: 'verify' => 'C:/path/to/cacert.pem', // Untuk production
+         ])->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+             'secret' => config('services.recaptcha.secret'),
+             'response' => $this->string('g-recaptcha-response'),
+             'ip' => $this->ip(),
+         ]);
+     
+         if (!$response->json('success')) {
+             throw ValidationException::withMessages([
+                 'g-recaptcha-response' => ['Verifikasi reCAPTCHA gagal. Silakan coba lagi.'],
+             ]);
+         }
+     }
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {

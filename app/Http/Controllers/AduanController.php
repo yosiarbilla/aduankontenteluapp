@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use App\Models\Aduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +12,15 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AduanController extends Controller
 {
+    public function __construct()
+    {
+        // Apply authentication middleware to all methods
+        $this->middleware('auth');
+
+        // Apply role middleware to specific methods
+        $this->middleware('role:admin,manager')->only(['approve']);
+        $this->middleware('role:admin,manager,petugas')->only(['destroy']);
+    }
     public function index()
     {
         // $apiToken = session('api_token');
@@ -49,12 +60,20 @@ class AduanController extends Controller
         //     return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
         // }
 
-        $aduan = Aduan::orderBy('created_at', 'desc')->get();
+        if (auth()->user()->role->role_id == 4) {
+            $aduan = Aduan::where('user_id', auth()->id())
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+        } else {
+            // For other roles, show all aduan
+            $aduan = Aduan::orderBy('created_at', 'desc')->get();
+        }
+        
         $jumlahAktif = Aduan::where('status', 'active')->count();
         $jumlahSelesai = Aduan::where('status', 'selesai')->count();
         $jumlahDraft = Aduan::where('status', 'draft')->count();
         $jumlahPending = Aduan::where('status', 'pending')->count();
-
+    
         return view('aduan.index', compact('aduan', 'jumlahAktif', 'jumlahSelesai', 'jumlahDraft', 'jumlahPending'));
     }
 
@@ -106,14 +125,14 @@ class AduanController extends Controller
         ];
 
         // Validate basic inputs first
-        $validator = \Validator::make($request->all(), $basicRules);
+        $validator = Validator::make($request->all(), $basicRules);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
         // Now validate files with custom error messages
-        $fileValidator = \Validator::make($request->all(), $fileRules, [
+        $fileValidator = Validator::make($request->all(), $fileRules, [
             'surat_permintaan.mimes' => 'Format surat permintaan harus PDF.',
             'surat_permintaan.max' => 'Ukuran surat permintaan maksimal 5MB.',
             'dokumen_pendukung.*.mimes' => 'Format dokumen pendukung harus JPG, PNG, DOC, atau PDF.',
@@ -238,19 +257,24 @@ class AduanController extends Controller
     }
 
     public function exportPdf($id)
-{
-    $aduan = Aduan::with('user')->findOrFail($id);
+    {
+        $aduan = Aduan::with('user')->findOrFail($id);
 
-    $pdf = PDF::setOptions(['isRemoteEnabled' => true])
-        ->loadView('aduan.export-pdf', compact('aduan'))
-        ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
+        $pdf = PDF::setOptions(['isRemoteEnabled' => true])
+            ->loadView('aduan.export-pdf', compact('aduan'))
+            ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
 
-    return $pdf->stream("{$aduan->ticket_id}.pdf", ['Attachment' => 0]);
-}
+        return $pdf->stream("{$aduan->ticket_id}.pdf", ['Attachment' => 0]);
+    }
 
     public function show($id)
     {
         $detailAduan = Aduan::findOrFail($id);
+
+        // // Cek kepemilikan data berdasarkan role
+        // if (auth()->user()->role_id != 1 && $detailAduan->user_id != auth()->id()) {
+        //     return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk melihat aduan ini.');
+        // }
 
         // Decode url_data JSON menjadi array
         $urlData = json_decode($detailAduan->url_data, true);
@@ -261,6 +285,11 @@ class AduanController extends Controller
 
     public function edit(Aduan $aduan)
     {
+        // Cek kepemilikan data dan status
+        if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk mengedit aduan ini.');
+        }
+
         if ($aduan->status == 'pending') {
             return redirect()->route('aduan.index')->with('error', 'Data tidak bisa diedit!');
         }
@@ -294,7 +323,11 @@ class AduanController extends Controller
     public function update(Request $request, Aduan $aduan)
     {
         // Log the entire request data for debugging
-        \Log::info('Request data:', $request->all());
+        Log::info('Request data:', $request->all());
+
+        if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk mengupdate aduan ini.');
+        }
 
         // Verify the aduan status first
         if ($aduan->status != 'draft') {
@@ -324,7 +357,7 @@ class AduanController extends Controller
         // Combine validation rules
         $rules = array_merge($basicRules, $fileRules);
 
-        $validator = \Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
@@ -427,13 +460,16 @@ class AduanController extends Controller
                 ->route('aduan.show', ['aduan' => $aduan->id])
                 ->with('success', 'Aduan berhasil diperbarui.');
         } catch (\Exception $e) {
-            \Log::error('Save error: ' . $e->getMessage());
+            Log::error('Save error: ' . $e->getMessage());
             return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 
     public function destroy(Aduan $aduan)
     {
+        if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menghapus aduan ini.');
+        }
         // Pastikan hanya aduan dengan status tertentu yang bisa dihapus
         if ($aduan->status != 'draft') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat dihapus!');
@@ -463,6 +499,11 @@ class AduanController extends Controller
     // Method baru untuk approval
     public function approve(Aduan $aduan)
     {
+        // Hanya admin dan manager yang bisa menyetujui aduan
+        if (!in_array(auth()->user()->role_id, [1, 2])) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menyetujui aduan.');
+        }
+
         // Pastikan hanya aduan dengan status pending yang bisa disetujui
         if ($aduan->status != 'pending') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status pending yang dapat disetujui!');
@@ -473,5 +514,14 @@ class AduanController extends Controller
         $aduan->save();
 
         return redirect()->route('aduan.index')->with('success', 'Aduan berhasil disetujui dan status diubah menjadi active.');
+    }
+
+    public function reject(Aduan $aduan)
+    {
+        $this->authorize('reject', $aduan); // Pastikan hanya manager yang bisa menolak aduan
+
+        $aduan->update(['status' => 'ditolak']);
+
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil ditolak');
     }
 }

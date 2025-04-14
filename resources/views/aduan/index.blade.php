@@ -102,7 +102,12 @@
 <!-- Semua Aduan -->
 <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-        <h5>Semua Aduan</h5>
+        <!-- Judul disesuaikan berdasarkan role -->
+        @if(Auth::user()->role->role_id == 4)
+            <h5>Aduan Saya</h5>
+        @else
+            <h5>Semua Aduan</h5>
+        @endif
         <a href="{{ route('aduan.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Buat Aduan</a>
     </div>
     
@@ -168,23 +173,26 @@
                         </thead>
                         <tbody>
                             @forelse ($aduan as $item)
-                                <tr>
-                                    <td class="text-primary">{{ $item->ticket_id }}</td>
-                                    <td>{{ $item->kategori }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $item->prioritas == 'High' ? 'danger' : 'success' }}">
-                                            {{ ucfirst($item->prioritas) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $item->nomor_surat ?? '-' }}</td>
-                                    <td>{{ $item->instansi ?? '-' }}</td>
-                                    <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
-                                    <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ route('aduan.show', $item->id) }}" class="btn btn-outline-success btn-sm">Detail</a>
-                                        <a href="{{ route('aduan.export-pdf', $item->id) }}" target="_blank" class="btn btn-outline-success btn-sm">Unduh</a>
-                                    </td>
-                                </tr>
+                                <!-- Filter aduan berdasarkan peran user -->
+                                @if(Auth::user()->role->role_id == 4 && Auth::id() == $item->user_id || Auth::user()->role->role_id != 4)
+                                    <tr>
+                                        <td class="text-primary">{{ $item->ticket_id }}</td>
+                                        <td>{{ $item->kategori }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $item->prioritas == 'High' ? 'danger' : ($item->prioritas == 'Urgent' ? 'warning' : 'success') }}">
+                                                {{ ucfirst($item->prioritas) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $item->nomor_surat ?? '-' }}</td>
+                                        <td>{{ $item->instansi ?? '-' }}</td>
+                                        <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
+                                        <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
+                                        <td>
+                                            <a href="{{ route('aduan.show', $item->id) }}" class="btn btn-outline-success btn-sm">Detail</a>
+                                            <a href="{{ route('aduan.export-pdf', $item->id) }}" target="_blank" class="btn btn-outline-success btn-sm">Unduh</a>
+                                        </td>
+                                    </tr>
+                                @endif
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center">Tidak ada data aduan tersedia.</td>
@@ -215,4 +223,3 @@
     @endif
 </script>
 @endsection
-

@@ -42,4 +42,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    // app/Models/User.php
+
+public function role()
+{
+    return $this->belongsTo(Role::class);
+}
+
+public function hasRole($role)
+{
+    if (!$this->role) {
+        return false;
+    }
+    
+    if (is_string($role)) {
+        return $this->role->slug === $role;
+    }
+    
+    return $role->id === $this->role->id;
+}
+
+public function isAdmin()
+{
+    return $this->hasRole('admin');
+}
 }
