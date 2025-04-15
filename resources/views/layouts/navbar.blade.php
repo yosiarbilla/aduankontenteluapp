@@ -4,7 +4,7 @@
   
   <!-- Judul Dashboard -->
   <h4 style="margin: 0; flex-grow: 1; color: #11A90C; font-family: 'Open Sans', sans-serif; font-size: 16px; font-weight:normal;">
-    TNI SIBER DASHBOA
+    TNI SIBER DASHBOARD
   </h4>
 
   <!-- Snippet notifikasi + dropdown user -->

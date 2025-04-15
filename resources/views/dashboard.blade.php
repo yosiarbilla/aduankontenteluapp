@@ -1,3 +1,4 @@
+@extends('layouts.app')
 <style>
     body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -71,7 +72,7 @@
 
 </style>
 
-@extends('layouts.app')
+
 
 @section('isi')
 

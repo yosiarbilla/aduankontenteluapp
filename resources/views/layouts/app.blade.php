@@ -12,7 +12,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- File CSS Anda -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
@@ -32,8 +32,21 @@
             left: 0 !important;
             width: 100% !important;
           }
+          @endif
 
-        @endif
+          /* Override styles for logout button */
+          .logout-button {
+            background: transparent !important;
+            color: var(--dark) !important;
+          }
+          .logout-button:hover {
+            background: #11A90C !important;
+            color: white !important;
+          }
+          li.active .logout-button {
+            background: transparent !important;
+            color: var(--dark) !important;
+          }
         </style>
       </head>
 
@@ -88,7 +101,11 @@
             @if (auth()->user()->role_id == 1)
                           {{-- Hanya admin --}}
                           <li class="nav-item">
-                              <a class="nav-link" href="{{ route('users.index') }}">Manajemen User</a>
+                              <a class="nav-link" href="{{ route('users.index') }}" 
+                              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;">
+                                <i class="fas fa-users icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+                                <span class="menu-text">Manajemen User</span>
+                              </a>
                           </li>
                       @endif
             <!-- Log Out di Bawah -->
@@ -99,7 +116,7 @@
             <li style="margin-top: auto; margin-bottom: 20px;">
             <form method="POST" action="{{ route('logout') }}">
               @csrf
-              <button type="submit" class="nav-link"
+              <button type="submit" class="nav-link logout-button"
               style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start; background: none; border: none; width: 100%; text-align: left;">
               <i class="fas fa-sign-out-alt icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
               <span class="menu-text">Keluar</span>
@@ -128,9 +145,74 @@
             <!-- Snippet yang Anda minta (notifikasi + dropdown user) -->
             <div class="d-flex align-items-center">
               <!-- Ikon Notifikasi -->
-              <a href="#" class="notification-icon me-3">
+              <a href="#" class="notification-icon me-3 position-relative" id="notificationIcon">
                 <i class="fas fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  3
+                </span>
               </a>
+              
+              <!-- Dropdown Notifikasi -->
+              <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 60px; right: 70px; width: 320px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 1000;">
+                <div class="p-3 border-bottom">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Notifikasi</h6>
+                    <a href="#" class="text-decoration-none small">Tandai semua dibaca</a>
+                  </div>
+                </div>
+                <div style="max-height: 320px; overflow-y: auto;">
+                  <!-- Notifikasi 1 -->
+                  <div class="p-3 border-bottom notification-item">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0">
+                        <div style="width: 40px; height: 40px; background-color: #e9f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                          <i class="fas fa-file-alt text-success"></i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <p class="mb-1 small"><strong>Aduan Baru</strong></p>
+                        <p class="small text-muted mb-1">Ada aduan baru yang perlu ditinjau</p>
+                        <p class="small text-muted mb-0">2 menit yang lalu</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Notifikasi 2 -->
+                  <div class="p-3 border-bottom notification-item">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0">
+                        <div style="width: 40px; height: 40px; background-color: #e9f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                          <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <p class="mb-1 small"><strong>Aduan Disetujui</strong></p>
+                        <p class="small text-muted mb-1">Aduan #12345 telah disetujui</p>
+                        <p class="small text-muted mb-0">1 jam yang lalu</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Notifikasi 3 -->
+                  <div class="p-3 notification-item">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0">
+                        <div style="width: 40px; height: 40px; background-color: #e9f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                          <i class="fas fa-user-plus text-success"></i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <p class="mb-1 small"><strong>Pengguna Baru</strong></p>
+                        <p class="small text-muted mb-1">Ada pengguna baru yang terdaftar</p>
+                        <p class="small text-muted mb-0">Kemarin</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-2 border-top text-center">
+                  <a href="#" class="text-decoration-none small">Lihat semua notifikasi</a>
+                </div>
+              </div>
 
               <!-- Bagian Auth (hanya tampil jika user login) -->
               @auth
@@ -142,7 +224,7 @@
               <ul class="dropdown-menu dropdown-menu-end">
               <li>
                 <a class="dropdown-item" href="{{ route('profile.show') }}">
-                Profile
+                Profil
                 </a>
               </li>
               <li>
@@ -167,6 +249,43 @@
           <!-- END MAIN -->
         </section>
         <script src="{{ asset('js/script.js') }}"></script>
+        
+        <!-- Notification Dropdown Script -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            // Toggle notification dropdown
+            if (notificationIcon && notificationDropdown) {
+              notificationIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                notificationDropdown.style.display = 
+                  notificationDropdown.style.display === 'none' ? 'block' : 'none';
+              });
+              
+              // Close dropdown when clicking elsewhere
+              document.addEventListener('click', function(e) {
+                if (notificationDropdown.style.display === 'block' && 
+                    !notificationDropdown.contains(e.target) && 
+                    !notificationIcon.contains(e.target)) {
+                  notificationDropdown.style.display = 'none';
+                }
+              });
+            }
+            
+            // Highlight notification items on hover
+            const notificationItems = document.querySelectorAll('.notification-item');
+            notificationItems.forEach(item => {
+              item.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#f8f9fa';
+              });
+              item.addEventListener('mouseout', function() {
+                this.style.backgroundColor = 'transparent';
+              });
+            });
+          });
+        </script>
         <!-- END CONTENT -->
       </body>
 
