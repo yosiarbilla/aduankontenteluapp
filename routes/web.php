@@ -69,6 +69,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
     });
+
+    // Error Routes
+    Route::get('/403', function () {
+        return view('errors.403');
+    })->name('403');
+    Route::get('/404', function () {
+        return view('errors.404');
+    });
 });
 
 require __DIR__.'/auth.php';
