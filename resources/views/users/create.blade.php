@@ -15,13 +15,24 @@
     .form-control {
         margin-bottom: 10px;
     }
+    .back-button {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .back-button i {
+        margin-right: 4px;
+    }
 </style>
 
 <div class="container-fluid mt-6">
     <div class="row">
         <div class="col-12 mb-3">
-            <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
-            <h5 class="mt-3">Tambah User Baru</h5>
+        <a href="{{ route('users.index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
         </div>
         
         <div class="col-12">

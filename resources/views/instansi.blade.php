@@ -165,7 +165,36 @@
     <h4 class="mb-4 px-3">Tentang Kami</h4>
     <div class="card">
       <div class="card-body">
-        <p>Ini adalah konten Tentang Kami. SOON.</p>
+        <!-- TNI Siber Section -->
+        <div class="mb-4">
+          <h5 class="fw-bold mb-2">Tentang Siber TNI</h5>
+          <div class="d-flex align-items-start" style="gap: 15px;">
+            <img src="{{ asset('images/tnilayar.jpeg') }}" alt="TNI Siber Command Center" style="width: 400px; height: auto; border-radius: 5px;">
+            <div>
+              <p style="line-height: 1.4; text-align: justify; margin-bottom: 3px;">
+                Satuan Siber Tentara Nasional Indonesia (Satsiber TNI) bertugas menyelenggarakan kegiatan dan operasi siber di lingkungan TNI dalam rangka mendukung tugas pokok TNI. Satsiber TNI dipimpin oleh Komandan Satsiber TNI (Dansatsiber TNI) berkedudukan di bawah dan bertanggung jawab kepada Panglima TNI dalam pelaksanaan tugas sehari-hari dikoordinasikan oleh Kasum TNI.
+              </p>
+              <p class="text-muted fst-italic" style="font-size: 0.8rem; margin-bottom: 0;">Via Wikipedia</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Divider between sections -->
+        <hr class="my-4">
+        
+        <!-- Sejarah Section -->
+        <div>
+          <h5 class="fw-bold mb-2">Sejarah Siber TNI</h5>
+          <div class="d-flex align-items-start" style="gap: 15px;">
+            <img src="{{ asset('images/tnittd.jpeg') }}" alt="Sejarah TNI Siber" style="width: 400px; height: auto; border-radius: 5px;">
+            <div>
+              <p style="line-height: 1.4; text-align: justify; margin-bottom: 3px;">
+                Rencana pembentukan Angkatan Siber Tentara Nasional Indonesia (TNI) kembali mengemuka setelah terjadinya berbagai serangan siber di Indonesia, termasuk ransomware server Pusat Data Nasional (PDN). Salah satu serangan ke server PDN berdampak pada data milk Badan Intelijen Strategis (BAIS) TNI yang diretas dan diperjualbelikan di dark web. Sebelumnya, usulan untuk membentuk Angkatan Siber TNI muncul dari mantan gubernur Lembaga Ketahanan Nasional (Lemhannas), Andi Widjajanto, yang menekankan bahwa invasi atau penyerangan ke suatu negara tidak lagi selalu melalui armada perang dan persenjataan, tetapi melalui peperangan siber (cyber warfare).
+              </p>
+              <p class="text-muted fst-italic" style="font-size: 0.8rem; margin-top: 0.3rem; margin-bottom: 0;">Via Berita DPR RI</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

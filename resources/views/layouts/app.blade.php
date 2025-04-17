@@ -37,7 +37,7 @@
           /* Override styles for logout button */
           .logout-button {
             background: transparent !important;
-            color: var(--dark) !important;
+            color: #000 !important;
           }
           .logout-button:hover {
             background: #11A90C !important;
@@ -45,7 +45,58 @@
           }
           li.active .logout-button {
             background: transparent !important;
-            color: var(--dark) !important;
+            color: #000 !important;
+          }
+          
+          /* New sidebar styles to match design */
+          #sidebar {
+            background-color: white !important;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+          }
+          
+          .side-menu li {
+            margin-bottom: 5px;
+          }
+          
+          .side-menu a.nav-link,
+          .side-menu button.nav-link {
+            color: #000 !important;
+            border-radius: 0 !important;
+            position: relative;
+            transition: all 0.3s;
+            font-weight: normal;
+          }
+          
+          .side-menu a.nav-link:hover,
+          .side-menu button.nav-link:hover {
+            background-color: rgba(17, 169, 12, 0.05) !important;
+            color: #11A90C !important;
+          }
+          
+          .side-menu a.nav-link.active,
+          .side-menu a.nav-link.active:hover {
+            background-color: white !important;
+            color: #11A90C !important;
+            font-weight: 500;
+          }
+          
+          .side-menu a.nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #11A90C;
+          }
+          
+          .side-menu i.icon {
+            color: #000;
+          }
+          
+          .side-menu a.nav-link.active i.icon,
+          .side-menu a.nav-link:hover i.icon {
+            color: #11A90C;
           }
         </style>
       </head>
@@ -62,10 +113,13 @@
           display: flex; 
           flex-direction: column; 
           height: 100vh; /* Agar sidebar memenuhi tinggi layar */
+          background-color: white;
+          box-shadow: 0 0 10px rgba(0,0,0,0.05);
+          width: 260px;
           ">
-          <div class="text-center" style="margin-bottom: 20px; padding-top: 15px;">
+          <div class="text-center" style="margin-bottom: 30px; padding-top: 20px;">
             <img src="{{ asset('images/logo.png') }}" alt="Logo TNI Siber" class="logo img-fluid"
-            style="width: 80%; max-width: 150px; height: auto;">
+            style="width: 80%; max-width: 120px; height: auto;">
           </div>
           <ul class="side-menu" style="
             display: flex; 
@@ -77,48 +131,47 @@
             <!-- Beranda -->
             <li>
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;">
-              <i class="fas fa-home icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+              style="display: flex; align-items: center; padding: 14px 20px; justify-content: flex-start;">
+              <i class="fas fa-home icon" style="width: 24px; text-align: center; margin-right: 10px;"></i>
               <span class="menu-text">Beranda</span>
             </a>
             </li>
             <!-- Aduan -->
             <li>
-            <a href="{{ route('aduan.index') }}" class="nav-link {{ request()->routeIs('aduan.index') ? 'active' : '' }}"
-              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;">
-              <i class="fas fa-file-alt icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+            <a href="{{ route('aduan.index') }}" class="nav-link {{ request()->routeIs('aduan.index') || request()->routeIs('aduan.*') ? 'active' : '' }}"
+              style="display: flex; align-items: center; padding: 14px 20px; justify-content: flex-start;">
+              <i class="fas fa-file-alt icon" style="width: 24px; text-align: center; margin-right: 10px;"></i>
               <span class="menu-text">Aduan</span>
             </a>
             </li>
             <!-- Instansi -->
             <li>
             <a href="{{ route('instansi') }}" class="nav-link {{ request()->routeIs('instansi') ? 'active' : '' }}"
-              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;">
-              <i class="fas fa-building icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+              style="display: flex; align-items: center; padding: 14px 20px; justify-content: flex-start;">
+              <i class="fas fa-building icon" style="width: 24px; text-align: center; margin-right: 10px;"></i>
               <span class="menu-text">Instansi</span>
             </a>
             </li>
             @if (auth()->user()->role_id == 1)
                           {{-- Hanya admin --}}
                           <li class="nav-item">
-                              <a class="nav-link" href="{{ route('users.index') }}" 
-                              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start;">
-                                <i class="fas fa-users icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+                              <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}" 
+                              style="display: flex; align-items: center; padding: 14px 20px; justify-content: flex-start;">
+                                <i class="fas fa-users icon" style="width: 24px; text-align: center; margin-right: 10px;"></i>
                                 <span class="menu-text">Manajemen User</span>
                               </a>
                           </li>
-                      @endif
+                      @endif
             <!-- Log Out di Bawah -->
             <li style="
             margin-top: auto; 
             margin-bottom: 20px;
             ">
-            <li style="margin-top: auto; margin-bottom: 20px;">
             <form method="POST" action="{{ route('logout') }}">
               @csrf
               <button type="submit" class="nav-link logout-button"
-              style="display: flex; align-items: center; padding: 12px 20px; justify-content: flex-start; background: none; border: none; width: 100%; text-align: left;">
-              <i class="fas fa-sign-out-alt icon" style="width: 20px; text-align: center; margin-right: 10px;"></i>
+              style="display: flex; align-items: center; padding: 14px 20px; justify-content: flex-start; background: none; border: none; width: 100%; text-align: left;">
+              <i class="fas fa-sign-out-alt icon" style="width: 24px; text-align: center; margin-right: 10px;"></i>
               <span class="menu-text">Keluar</span>
               </button>
             </form>
