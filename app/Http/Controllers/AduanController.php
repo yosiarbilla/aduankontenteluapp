@@ -60,7 +60,7 @@ class AduanController extends Controller
         //     return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
         // }
 
-        if (auth()->user()->role->role_id == 4) {
+        if (auth()->user()->role_id == 4) {
             $aduan = Aduan::where('user_id', auth()->id())
                           ->orderBy('created_at', 'desc')
                           ->get();
