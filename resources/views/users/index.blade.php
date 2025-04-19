@@ -40,21 +40,19 @@
             <a href="{{ route('users.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Tambah User Baru</a>
         </div>
         
+        <!-- Search Field (moved outside card) -->
+        <div class="col-12 d-flex justify-content-end mb-3">
+            <div class="input-group" style="width: 300px;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" id="searchTable" class="form-control border-start-0" placeholder="Cari...">
+            </div>
+        </div>
+        
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <!-- Search Field -->
-                    <div class="row mb-4">
-                        <div class="col-12 d-flex justify-content-end">
-                            <div class="input-group" style="width: 300px;">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-search text-muted"></i>
-                                </span>
-                                <input type="text" id="searchTable" class="form-control border-start-0" placeholder="Cari...">
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Tabel User -->
                     <div class="table-responsive">
                         <table class="table table-borderless" id="userTable">
