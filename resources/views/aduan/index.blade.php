@@ -35,6 +35,16 @@
     .text-end button {
         min-width: 100px;
     }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: #fff;
+    }
+    .btn-primary {
+        background-color: #28a745;
+        border: none;
+        color: #fff;
+    }
     @media (max-width: 768px) {
        
         .card {

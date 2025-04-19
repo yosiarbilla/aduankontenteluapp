@@ -206,7 +206,7 @@
               </a>
               
               <!-- Dropdown Notifikasi -->
-              <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 60px; right: 70px; width: 320px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 1000;">
+              <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: fixed; top: 60px; right: 70px; width: 320px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 9999;">
                 <div class="p-3 border-bottom">
                   <div class="d-flex justify-content-between align-items-center">
                     <h6 class="m-0">Notifikasi</h6>
