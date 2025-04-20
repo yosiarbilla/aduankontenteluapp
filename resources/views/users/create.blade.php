@@ -15,13 +15,24 @@
     .form-control {
         margin-bottom: 10px;
     }
+    .back-button {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .back-button i {
+        margin-right: 4px;
+    }
 </style>
 
 <div class="container-fluid mt-6">
     <div class="row">
         <div class="col-12 mb-3">
-            <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
-            <h5 class="mt-3">Tambah User Baru</h5>
+        <a href="{{ route('users.index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
         </div>
         
         <div class="col-12">
@@ -42,6 +53,50 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pangkat" class="form-label">Pangkat (Opsional)</label>
+                            <select class="form-control" id="pangkat" name="pangkat">
+                                <option value="">Pilih Pangkat</option>
+                                <!-- Pangkat TNI AD Perwira -->
+                                <optgroup label="Perwira Tinggi">
+                                    <option value="Jenderal" {{ old('pangkat') == 'Jenderal' ? 'selected' : '' }}>Jenderal TNI</option>
+                                    <option value="Letnan Jenderal" {{ old('pangkat') == 'Letnan Jenderal' ? 'selected' : '' }}>Letnan Jenderal TNI</option>
+                                    <option value="Mayor Jenderal" {{ old('pangkat') == 'Mayor Jenderal' ? 'selected' : '' }}>Mayor Jenderal TNI</option>
+                                    <option value="Brigadir Jenderal" {{ old('pangkat') == 'Brigadir Jenderal' ? 'selected' : '' }}>Brigadir Jenderal TNI</option>
+                                </optgroup>
+                                <optgroup label="Perwira Menengah">
+                                    <option value="Kolonel" {{ old('pangkat') == 'Kolonel' ? 'selected' : '' }}>Kolonel</option>
+                                    <option value="Letnan Kolonel" {{ old('pangkat') == 'Letnan Kolonel' ? 'selected' : '' }}>Letnan Kolonel</option>
+                                    <option value="Mayor" {{ old('pangkat') == 'Mayor' ? 'selected' : '' }}>Mayor</option>
+                                </optgroup>
+                                <optgroup label="Perwira Pertama">
+                                    <option value="Kapten" {{ old('pangkat') == 'Kapten' ? 'selected' : '' }}>Kapten</option>
+                                    <option value="Letnan Satu" {{ old('pangkat') == 'Letnan Satu' ? 'selected' : '' }}>Letnan Satu</option>
+                                    <option value="Letnan Dua" {{ old('pangkat') == 'Letnan Dua' ? 'selected' : '' }}>Letnan Dua</option>
+                                </optgroup>
+                                <!-- Pangkat TNI AD Bintara -->
+                                <optgroup label="Bintara Tinggi">
+                                    <option value="Pembantu Letnan Satu" {{ old('pangkat') == 'Pembantu Letnan Satu' ? 'selected' : '' }}>Pembantu Letnan Satu</option>
+                                    <option value="Pembantu Letnan Dua" {{ old('pangkat') == 'Pembantu Letnan Dua' ? 'selected' : '' }}>Pembantu Letnan Dua</option>
+                                </optgroup>
+                                <optgroup label="Bintara">
+                                    <option value="Sersan Mayor" {{ old('pangkat') == 'Sersan Mayor' ? 'selected' : '' }}>Sersan Mayor</option>
+                                    <option value="Sersan Kepala" {{ old('pangkat') == 'Sersan Kepala' ? 'selected' : '' }}>Sersan Kepala</option>
+                                    <option value="Sersan Satu" {{ old('pangkat') == 'Sersan Satu' ? 'selected' : '' }}>Sersan Satu</option>
+                                    <option value="Sersan Dua" {{ old('pangkat') == 'Sersan Dua' ? 'selected' : '' }}>Sersan Dua</option>
+                                </optgroup>
+                                <!-- Pangkat TNI AD Tamtama -->
+                                <optgroup label="Tamtama">
+                                    <option value="Kopral Kepala" {{ old('pangkat') == 'Kopral Kepala' ? 'selected' : '' }}>Kopral Kepala</option>
+                                    <option value="Kopral Satu" {{ old('pangkat') == 'Kopral Satu' ? 'selected' : '' }}>Kopral Satu</option>
+                                    <option value="Kopral Dua" {{ old('pangkat') == 'Kopral Dua' ? 'selected' : '' }}>Kopral Dua</option>
+                                    <option value="Prajurit Kepala" {{ old('pangkat') == 'Prajurit Kepala' ? 'selected' : '' }}>Prajurit Kepala</option>
+                                    <option value="Prajurit Satu" {{ old('pangkat') == 'Prajurit Satu' ? 'selected' : '' }}>Prajurit Satu</option>
+                                    <option value="Prajurit Dua" {{ old('pangkat') == 'Prajurit Dua' ? 'selected' : '' }}>Prajurit Dua</option>
+                                </optgroup>
+                            </select>
                         </div>
                         
                         <div class="mb-3">

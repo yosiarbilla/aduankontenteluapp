@@ -60,19 +60,89 @@ class AduanController extends Controller
         //     return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
         // }
 
-        if (auth()->user()->role->role_id == 4) {
-            $aduan = Aduan::where('user_id', auth()->id())
-                          ->orderBy('created_at', 'desc')
-                          ->get();
+        // Get per_page value from request, default to 10
+        $perPage = request('per_page', 10);
+        
+        // Create base query depending on user role
+        if (auth()->user()->role_id == 4) {
+            $query = Aduan::where('user_id', auth()->id());
         } else {
             // For other roles, show all aduan
-            $aduan = Aduan::orderBy('created_at', 'desc')->get();
+            $query = Aduan::query();
         }
         
-        $jumlahAktif = Aduan::where('status', 'active')->count();
-        $jumlahSelesai = Aduan::where('status', 'selesai')->count();
-        $jumlahDraft = Aduan::where('status', 'draft')->count();
-        $jumlahPending = Aduan::where('status', 'pending')->count();
+        // Apply filters if provided
+        if (request()->filled('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('ticket_id', 'like', "%{$search}%")
+                  ->orWhere('nomor_surat', 'like', "%{$search}%")
+                  ->orWhere('instansi', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%")
+                  ->orWhere('prioritas', 'like', "%{$search}%");
+            });
+        }
+        
+        if (request()->filled('kategori')) {
+            $query->where('kategori', request('kategori'));
+        }
+        
+        if (request()->filled('status')) {
+            $query->where('status', request('status'));
+        }
+        
+        if (request()->filled('date_from')) {
+            $query->whereDate('created_at', '>=', request('date_from'));
+        }
+        
+        if (request()->filled('date_to')) {
+            $query->whereDate('created_at', '<=', request('date_to'));
+        }
+        
+        // Sort by newest first
+        $query->orderBy('created_at', 'desc');
+        
+        // Get paginated results
+        $aduan = $query->paginate($perPage)->withQueryString();
+        
+        // Count statistics - dengan filter jika ada
+        $statsQuery = Aduan::query();
+        
+        // Jika user reguler, hanya tampilkan aduan mereka sendiri
+        if (auth()->user()->role_id == 4) {
+            $statsQuery->where('user_id', auth()->id());
+        }
+        
+        // Filter untuk statistik juga jika kata kunci pencarian diberikan
+        if (request()->filled('search')) {
+            $search = request('search');
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('ticket_id', 'like', "%{$search}%")
+                  ->orWhere('nomor_surat', 'like', "%{$search}%")
+                  ->orWhere('instansi', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%");
+            });
+        }
+        
+        // Jika ada filter kategori
+        if (request()->filled('kategori')) {
+            $statsQuery->where('kategori', request('kategori'));
+        }
+        
+        // Jika ada filter rentang tanggal
+        if (request()->filled('date_from')) {
+            $statsQuery->whereDate('created_at', '>=', request('date_from'));
+        }
+        
+        if (request()->filled('date_to')) {
+            $statsQuery->whereDate('created_at', '<=', request('date_to'));
+        }
+        
+        // Count berdasarkan status
+        $jumlahAktif = (clone $statsQuery)->where('status', 'active')->count();
+        $jumlahSelesai = (clone $statsQuery)->where('status', 'selesai')->count();
+        $jumlahDraft = (clone $statsQuery)->where('status', 'draft')->count();
+        $jumlahPending = (clone $statsQuery)->where('status', 'pending')->count();
     
         return view('aduan.index', compact('aduan', 'jumlahAktif', 'jumlahSelesai', 'jumlahDraft', 'jumlahPending'));
     }
@@ -258,9 +328,20 @@ class AduanController extends Controller
 
     public function exportPdf($id)
     {
+        // Set unlimited execution time untuk function ini
+        ini_set('max_execution_time', 300); // 5 menit
+        ini_set('memory_limit', '512M');   // Tambah batas memori
+        
         $aduan = Aduan::with('user')->findOrFail($id);
 
-        $pdf = PDF::setOptions(['isRemoteEnabled' => true])
+        $pdf = PDF::setOptions([
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+                'isPhpEnabled' => true,
+                'defaultFont' => 'Arial',
+                'dpi' => 72,
+                'debugCss' => false,
+            ])
             ->loadView('aduan.export-pdf', compact('aduan'))
             ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
 

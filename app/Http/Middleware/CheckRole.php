@@ -27,6 +27,6 @@ class CheckRole
         }
         
         // If the user doesn't have any of the required roles
-        return redirect()->route('home')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        return redirect('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
     }
 }

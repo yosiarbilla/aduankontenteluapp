@@ -8,8 +8,22 @@
 @endphp
 <style>
     .container {
-        padding-left: 120px;
-        padding-right: 100px;
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .container {
+            padding-left: 60px;
+            padding-right: 60px;
+        }
     }
 
     .card {
@@ -171,7 +185,7 @@
             <div class="card">
                 <div class="row row-gap">
                     <h5 style="font-weight: bold;">Kategori</h5>
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6 mb-3 mb-md-0">
                         <label for="kategori" class="form-label">Kategori</label>
                         <select id="kategori" name="kategori" class="form-control form-control-select @error('kategori') is-invalid @enderror">
                             <option value="">Pilih Kategori</option>
@@ -183,7 +197,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label for="prioritas" class="form-label">Prioritas</label>
                         <select id="prioritas" name="prioritas" class="form-control form-control-select @error('prioritas') is-invalid @enderror">
                             <option value="Normal" {{ old('prioritas') == 'Normal' ? 'selected' : '' }}>Normal</option>
@@ -201,14 +215,14 @@
             <div class="card">
                 <h5 style="font-weight: bold;">Surat Permintaan dan Dokumen Pendukung</h5>
                 <div class="row row-gap">
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6 mb-3 mb-md-0">
                         <label for="nomorSurat" class="form-label">Nomor Surat</label>
                         <input type="text" id="nomorSurat" name="nomor_surat" class="form-control @error('nomor_surat') is-invalid @enderror" placeholder="Nomor Surat" value="{{ old('nomor_surat') }}">
                         @error('nomor_surat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label for="suratPermintaan" class="form-label">Surat Permintaan</label>
                         <input type="file" id="suratPermintaan" name="surat_permintaan" class="form-control @error('surat_permintaan') is-invalid @enderror">
                         <small class="text-muted">Maksimal berukuran 1 MB, format: pdf</small>
@@ -218,8 +232,8 @@
                     </div>
                 </div>
                 <!-- Tambahkan div container untuk dokumen pendukung -->
-                <div class="row row-gap">
-                    <div class="col-md-6">
+                <div class="row row-gap mt-3">
+                    <div class="col-12 col-md-6 mb-3 mb-md-0">
                         <label for="dokumenPendukung" class="form-label">Dokumen Pendukung</label>
                         <div id="dokumenPendukungContainer">
                             <input type="file" id="dokumenPendukung" name="dokumen_pendukung[]" class="form-control @error('dokumen_pendukung.*') is-invalid @enderror">
@@ -234,7 +248,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label for="catatanTambahan" class="form-label">Catatan Tambahan</label>
                         <textarea id="catatanTambahan" name="catatan_tambahan" class="form-control @error('catatan_tambahan') is-invalid @enderror" rows="5">{{ old('catatan_tambahan') }}</textarea>
                         @error('catatan_tambahan')

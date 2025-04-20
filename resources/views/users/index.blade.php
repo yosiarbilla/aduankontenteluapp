@@ -16,6 +16,11 @@
         padding: 5px 10px;
         border-radius: 20px;
     }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: #fff;
+    }
 </style>
 
 <div class="container-fluid mt-6">
@@ -40,15 +45,26 @@
             <a href="{{ route('users.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Tambah User Baru</a>
         </div>
         
+        <!-- Search Field (moved outside card) -->
+        <div class="col-12 d-flex justify-content-end mb-3">
+            <div class="input-group" style="width: 300px;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" id="searchTable" class="form-control border-start-0" placeholder="Cari...">
+            </div>
+        </div>
+        
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <!-- Tabel User -->
                     <div class="table-responsive">
-                        <table class="table table-borderless">
+                        <table class="table table-borderless" id="userTable">
                             <thead>
                                 <tr class="text-muted">
                                     <th>Nama</th>
+                                    <th>Pangkat</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Tanggal Dibuat</th>
@@ -59,6 +75,7 @@
                                 @forelse ($users as $user)
                                     <tr>
                                         <td>{{ $user->name }}</td>
+                                        <td>{{ $user->pangkat ?? '-' }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             <span class="badge bg-{{ $user->role_id == 1 ? 'danger' : ($user->role_id == 2 ? 'warning' : ($user->role_id == 3 ? 'info' : 'secondary')) }}">
@@ -113,5 +130,41 @@
         showCloseButton: true
     });
     @endif
+
+    // Simple search functionality
+    const searchInput = document.getElementById('searchTable');
+    const table = document.getElementById('userTable');
+    
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const rows = table.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Check if no results found
+        const visibleRows = table.querySelectorAll('tbody tr:not([style*="display: none"])');
+        const tbody = table.querySelector('tbody');
+        const noResultsRow = table.querySelector('.no-results-row');
+        
+        if (visibleRows.length === 0 && !noResultsRow) {
+            const newRow = document.createElement('tr');
+            newRow.className = 'no-results-row';
+            newRow.innerHTML = `
+                <td colspan="5" class="text-center py-4 text-muted">
+                    <i class="fas fa-search me-2"></i>Tidak ada hasil pencarian untuk "${searchInput.value}"
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        } else if (visibleRows.length > 0 && noResultsRow) {
+            noResultsRow.remove();
+        }
+    });
 </script>
 @endsection

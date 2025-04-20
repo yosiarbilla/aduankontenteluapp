@@ -1,6 +1,13 @@
 // SIDEBAR DROPDOWN
 const allDropdown = document.querySelectorAll('#sidebar .side-dropdown');
 const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+const toggleSidebarBtn = document.querySelector('nav .toggle-sidebar');
+
+// Debug untuk memastikan elemen ditemukan
+console.log('Sidebar:', sidebar);
+console.log('Sidebar Overlay:', sidebarOverlay);
+console.log('Toggle Button:', toggleSidebarBtn);
 
 allDropdown.forEach(item=> {
 	const a = item.parentElement.querySelector('a:first-child');
@@ -45,9 +52,33 @@ if(sidebar.classList.contains('hide')) {
 }
 
 toggleSidebar.addEventListener('click', function (e) {
+    console.log('Toggle sidebar clicked');
+    
     if(window.innerWidth <= 768) {
         e.preventDefault();
+        console.log('Mobile view detected, toggling sidebar class');
         sidebar.classList.toggle('show'); // Untuk mobile
+        
+        console.log('Sidebar has show class:', sidebar.classList.contains('show'));
+        
+        // Tampilkan atau sembunyikan overlay saat sidebar toggle di mobile
+        if(sidebar.classList.contains('show')) {
+            if(sidebarOverlay) {
+                sidebarOverlay.classList.remove('d-none');
+                setTimeout(() => {
+                    sidebarOverlay.classList.add('show');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Mencegah scrolling
+            }
+        } else {
+            if(sidebarOverlay) {
+                sidebarOverlay.classList.remove('show');
+                setTimeout(() => {
+                    sidebarOverlay.classList.add('d-none');
+                }, 300); // Waktu sesuai dengan transisi CSS
+                document.body.style.overflow = ''; // Mengembalikan scrolling
+            }
+        }
     } else {
         sidebar.classList.toggle('hide'); // Untuk desktop (kode asli Anda)
 
@@ -68,6 +99,29 @@ toggleSidebar.addEventListener('click', function (e) {
         }
     }
 })
+
+// Menyembunyikan sidebar ketika overlay diklik
+if(sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', function() {
+        if(sidebar) {
+            sidebar.classList.remove('show');
+        }
+        this.classList.remove('show');
+        setTimeout(() => {
+            this.classList.add('d-none');
+        }, 300);
+        document.body.style.overflow = ''; // Mengembalikan scrolling
+    });
+}
+
+// Handling resize pada window
+window.addEventListener('resize', function() {
+    if(window.innerWidth > 768) {
+        sidebarOverlay.classList.remove('show');
+        sidebarOverlay.classList.add('d-none');
+        document.body.style.overflow = '';
+    }
+});
 
 // PROFILE DROPDOWN
 const profile = document.querySelector('nav .profile');
