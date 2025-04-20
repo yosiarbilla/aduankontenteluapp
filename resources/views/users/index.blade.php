@@ -16,6 +16,11 @@
         padding: 5px 10px;
         border-radius: 20px;
     }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: #fff;
+    }
 </style>
 
 <div class="container-fluid mt-6">

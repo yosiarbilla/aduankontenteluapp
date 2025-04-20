@@ -69,7 +69,36 @@
         border: none;
     }
 
-
+    /* Modal overlay style fix - stronger styling */
+    .modal-backdrop {
+        opacity: 0.7 !important;
+        background-color: #000 !important;
+        z-index: 1040 !important;
+    }
+    
+    /* Pastikan modal tampil di atas semua elemen */
+    .modal {
+        z-index: 9999 !important;
+    }
+    
+    /* Custom overlay for manual implementation */
+    #custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 9000;
+        display: none;
+    }
+    
+    /* Mobile spacing for cards */
+    @media (max-width: 768px) {
+        .card-container {
+            margin-bottom: 20px;
+        }
+    }
 </style>
 
 
@@ -80,30 +109,30 @@
     <!-- Informasi Umum -->
     <h5>Informasi Umum</h5>
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-4 card-container mb-3">
             <div class="card">
                 <img src="{{ asset('images/laptop.jpg') }}" alt="Tata Cara Pengisian Aduan">
                 <div class="card-title">Tata Cara Pengisian Aduan</div>
                 <div class="card-overlay">
-                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link modal-trigger" data-content="aduan">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 card-container mb-3">
             <div class="card">
                 <img src="{{ asset('images/laptop2.jpg') }}" alt="Pemberitahuan Hari Ini">
                 <div class="card-title">Pemberitahuan Hari Ini</div>
                 <div class="card-overlay">
-                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link modal-trigger" data-content="pemberitahuan">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 card-container mb-3">
             <div class="card">
                 <img src="{{ asset('images/laptop3.jpg') }}" alt="Kenali Lebih Dalam TNI Siber">
                 <div class="card-title">Kenali Lebih Dalam TNI Siber</div>
                 <div class="card-overlay">
-                <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#infoModal">Pelajari Selengkapnya</a>
+                <a href="#" class="card-link modal-trigger" data-content="tni-siber">Pelajari Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -112,7 +141,7 @@
     <!-- Aduan Terakhir -->
     <div class="card-header d-flex justify-content-between">
             <h5>Aduan Terakhir</h5>
-            <a href="#" class="text-success" style = "text-decoration: none; font-weight:bold;">Lihat Lebih</a>
+            <a href="{{ route('aduan.index') }}" class="text-success" style = "text-decoration: none; font-weight:bold;">Lihat Lebih</a>
         </div>
     <div class="card shadow-sm">
         <div class="card-body">
@@ -207,12 +236,17 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+
+<!-- Custom overlay element -->
+<div id="custom-modal-overlay"></div>
+
+<!-- Modal with enhanced structure -->
+<div class="modal" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="infoModalLabel">Tata Cara Pengisian Aduan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close close-modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
@@ -225,9 +259,74 @@
                 </ol>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Mengerti</button>
+                <button type="button" class="btn btn-success close-modal">Mengerti</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Enhanced modal controls with vanilla JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('infoModal');
+        const customOverlay = document.getElementById('custom-modal-overlay');
+        const modalTriggers = document.querySelectorAll('.modal-trigger');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        
+        // Function to open modal
+        function openModal() {
+            // Show the custom overlay
+            customOverlay.style.display = 'block';
+            
+            // Show the modal with a slight delay for the overlay
+            setTimeout(() => {
+                modalElement.style.display = 'block';
+                document.body.classList.add('modal-open');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }, 50);
+        }
+        
+        // Function to close modal
+        function closeModal() {
+            // Hide modal
+            modalElement.style.display = 'none';
+            
+            // Hide overlay
+            customOverlay.style.display = 'none';
+            
+            // Restore scrolling
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            
+            // Clean up any Bootstrap modal remnants
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => {
+                backdrop.parentNode.removeChild(backdrop);
+            });
+        }
+        
+        // Event listeners for opening modal
+        modalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal();
+            });
+        });
+        
+        // Event listeners for closing modal
+        closeButtons.forEach(button => {
+            button.addEventListener('click', closeModal);
+        });
+        
+        // Close when clicking outside modal
+        customOverlay.addEventListener('click', closeModal);
+        
+        // Close when pressing ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modalElement.style.display === 'block') {
+                closeModal();
+            }
+        });
+    });
+</script>
 @endsection

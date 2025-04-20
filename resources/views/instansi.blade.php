@@ -6,7 +6,8 @@
   .nav-tabs {
     border-bottom: none;
     background-color: white;
-    width: 360px;
+    width: 100%;
+    max-width: 360px;
     padding: 8px 16px;
     border-radius: 10px;
     display: inline-flex;
@@ -107,52 +108,52 @@
     <div class="card">
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Nama Instansi</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             Pusat Sandi dan Siber TNI AD
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Logo</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             <div class="logo-container">
               <img src="{{ asset('images/logo.png') }}" alt="Logo Instansi" class="img-fluid">
             </div>
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Alamat</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             Jl. Veteran No.5, Gambir, Jakarta Pusat
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Kota</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             Jakarta Pusat, DKI Jakarta
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Nomor Telepon</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             0812 4812 1994
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-md-3">
+          <div class="col-md-3 col-sm-4 mb-2 mb-md-0">
             <span class="detail-label">Website</span>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 col-sm-8">
             <a href="http://www.pusansiad.tni-ad.mil.id" target="_blank">www.pusansiad.tni-ad.mil.id</a>
           </div>
         </div>
@@ -167,11 +168,13 @@
       <div class="card-body">
         <!-- TNI Siber Section -->
         <div class="mb-4">
-          <h5 class="fw-bold mb-2">Tentang Siber TNI</h5>
-          <div class="d-flex align-items-start" style="gap: 15px;">
-            <img src="{{ asset('images/tnilayar.jpeg') }}" alt="TNI Siber Command Center" style="width: 400px; height: auto; border-radius: 5px;">
-            <div>
-              <p style="line-height: 1.4; text-align: justify; margin-bottom: 3px;">
+          <h5 class="fw-bold mb-3">Tentang Siber TNI</h5>
+          <div class="row">
+            <div class="col-lg-4 col-md-6 mb-3">
+              <img src="{{ asset('images/tnilayar.jpeg') }}" alt="TNI Siber Command Center" class="img-fluid rounded" style="width: 100%;">
+            </div>
+            <div class="col-lg-8 col-md-6">
+              <p style="line-height: 1.5; text-align: justify; margin-bottom: 8px;">
                 Satuan Siber Tentara Nasional Indonesia (Satsiber TNI) bertugas menyelenggarakan kegiatan dan operasi siber di lingkungan TNI dalam rangka mendukung tugas pokok TNI. Satsiber TNI dipimpin oleh Komandan Satsiber TNI (Dansatsiber TNI) berkedudukan di bawah dan bertanggung jawab kepada Panglima TNI dalam pelaksanaan tugas sehari-hari dikoordinasikan oleh Kasum TNI.
               </p>
               <p class="text-muted fst-italic" style="font-size: 0.8rem; margin-bottom: 0;">Via Wikipedia</p>
@@ -184,13 +187,16 @@
         
         <!-- Sejarah Section -->
         <div>
-          <h5 class="fw-bold mb-2">Sejarah Siber TNI</h5>
-          <div class="d-flex align-items-start" style="gap: 15px;">
-            <img src="{{ asset('images/tnittd.jpeg') }}" alt="Sejarah TNI Siber" style="width: 400px; height: auto; border-radius: 5px;">
-            <div>
-              <p style="line-height: 1.4; text-align: justify; margin-bottom: 3px;">
+          <h5 class="fw-bold mb-3">Sejarah Siber TNI</h5>
+          <div class="row">
+            <div class="col-lg-4 col-md-6 mb-3">
+              <img src="{{ asset('images/tnittd.jpeg') }}" alt="Sejarah TNI Siber" class="img-fluid rounded" style="width: 100%;">
+            </div>
+            <div class="col-lg-8 col-md-6">
+              <p style="line-height: 1.5; text-align: justify; margin-bottom: 8px;">
                 Rencana pembentukan Angkatan Siber Tentara Nasional Indonesia (TNI) kembali mengemuka setelah terjadinya berbagai serangan siber di Indonesia, termasuk ransomware server Pusat Data Nasional (PDN). Salah satu serangan ke server PDN berdampak pada data milk Badan Intelijen Strategis (BAIS) TNI yang diretas dan diperjualbelikan di dark web. Sebelumnya, usulan untuk membentuk Angkatan Siber TNI muncul dari mantan gubernur Lembaga Ketahanan Nasional (Lemhannas), Andi Widjajanto, yang menekankan bahwa invasi atau penyerangan ke suatu negara tidak lagi selalu melalui armada perang dan persenjataan, tetapi melalui peperangan siber (cyber warfare).
               </p>
+              <a href="#" class="text-success fw-medium text-decoration-none">Lihat Lebih</a>
               <p class="text-muted fst-italic" style="font-size: 0.8rem; margin-top: 0.3rem; margin-bottom: 0;">Via Berita DPR RI</p>
             </div>
           </div>

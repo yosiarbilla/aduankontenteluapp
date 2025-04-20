@@ -98,6 +98,44 @@
           .side-menu a.nav-link:hover i.icon {
             color: #11A90C;
           }
+          
+          /* Sidebar overlay untuk mobile */
+          #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+            display: none;
+            transition: all 0.3s ease;
+          }
+          
+          /* Tampilkan overlay saat sidebar aktif di mobile */
+          #sidebar-overlay.show {
+            display: block;
+          }
+          
+          /* Media query untuk mobile */
+          @media (max-width: 768px) {
+            #sidebar {
+              position: fixed;
+              left: -260px; /* Sesuaikan dengan lebar sidebar */
+              width: 260px;
+              z-index: 1000;
+              transition: all 0.3s ease;
+            }
+            
+            #sidebar.show {
+              left: 0;
+            }
+            
+            #content {
+              left: 0 !important;
+              width: 100% !important;
+            }
+          }
         </style>
       </head>
 
@@ -107,6 +145,9 @@
         $hideSidebar = $hideSidebar ?? false;
         $hideToggle = $hideToggle ?? false;
       @endphp
+        <!-- Overlay untuk mobile -->
+        <div id="sidebar-overlay" class="d-none"></div>
+        
         @if(!$hideSidebar)
           <!-- SIDEBAR -->
           <section id="sidebar" style="
@@ -161,7 +202,7 @@
                                 <span class="menu-text">Manajemen User</span>
                               </a>
                           </li>
-                      @endif
+                      @endif
             <!-- Log Out di Bawah -->
             <li style="
             margin-top: auto; 
@@ -340,6 +381,12 @@
           });
         </script>
         <!-- END CONTENT -->
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- Stack for scripts -->
+        @stack('scripts')
       </body>
 
       </html>
