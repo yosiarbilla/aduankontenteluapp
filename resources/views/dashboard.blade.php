@@ -103,10 +103,25 @@
     /* Pastikan modal tampil di atas semua elemen */
     .modal {
         z-index: 9999 !important;
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0);
+        padding-top: 60px;
     }
+    
+    .modal.show {
+        display: block !important;
+    }
+    
     .text-success {
         color: #28a745;
         font-weight: bold;
+    }
     
     /* Custom overlay for manual implementation */
     #custom-modal-overlay {
@@ -125,6 +140,24 @@
         .card-container {
             margin-bottom: 20px;
         }
+    }
+    
+    /* Override Bootstrap's modal styling */
+    .modal-dialog {
+        max-width: 500px;
+        margin: 1.75rem auto;
+    }
+    
+    .modal-content {
+        position: relative;
+        background-color: #fff;
+        border-radius: 0.3rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+        outline: 0;
+    }
+    
+    .modal-open {
+        overflow: hidden;
     }
 </style>
 
@@ -338,18 +371,18 @@
             // Show the custom overlay
             customOverlay.style.display = 'block';
             
-            // Show the modal with a slight delay for the overlay
-            setTimeout(() => {
-                modalElement.style.display = 'block';
-                document.body.classList.add('modal-open');
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            }, 50);
+            // Show the modal immediately
+            modalElement.style.display = 'block';
+            modalElement.classList.add('show');
+            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
         }
         
         // Function to close modal
         function closeModal() {
             // Hide modal
             modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
             
             // Hide overlay
             customOverlay.style.display = 'none';
@@ -357,12 +390,6 @@
             // Restore scrolling
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
-            
-            // Clean up any Bootstrap modal remnants
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => {
-                backdrop.parentNode.removeChild(backdrop);
-            });
         }
         
         // Event listeners for opening modal
@@ -383,10 +410,16 @@
         
         // Close when pressing ESC key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modalElement.style.display === 'block') {
+            if (e.key === 'Escape' && modalElement.classList.contains('show')) {
                 closeModal();
             }
         });
+        
+        // Open modal on page load if needed
+        // const shouldOpenModal = true; // Set this based on your logic
+        // if (shouldOpenModal) {
+        //     openModal();
+        // }
     });
 </script>
 @endsection

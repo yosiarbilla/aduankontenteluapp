@@ -20,9 +20,9 @@
 <div class="container-fluid mt-6">
     <div class="row">
         <div class="col-12 mb-3">
-        <a href="{{ route('users.index') }}" class="back-button">
-            <i class="fas fa-arrow-left"></i> Kembali
-        </a>
+                <a href="{{ route('users.index') }}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
             <h5 class="mt-3">Edit User: {{ $user->name }}</h5>
         </div>
         
