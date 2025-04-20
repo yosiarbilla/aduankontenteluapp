@@ -132,13 +132,38 @@
 </head>
 <body>
     <div class="header">
-        <img src="https://www.kominfo.go.id/content/images/logo-kominfo-blue.png" alt="Logo Kominfo" class="logo">
+        @php
+            // Coba cari logo di public folder
+            $logoPath = public_path('images/logokomdigi2.png');
+            $logoBase64 = '';
+            
+            // Jika ada di public folder
+            if (file_exists($logoPath)) {
+                $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+                $logoData = file_get_contents($logoPath);
+                $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($logoData);
+            } else {
+                // Coba cari di storage folder
+                $logoStoragePath = storage_path('app/public/images/logokomdigi2.png');
+                if (file_exists($logoStoragePath)) {
+                    $type = pathinfo($logoStoragePath, PATHINFO_EXTENSION);
+                    $logoData = file_get_contents($logoStoragePath);
+                    $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($logoData);
+                } else {
+                    // Coba cari logokomdigi2.png sebagai alternatif
+                    $logoAltPath = public_path('images/logokomdigi2.png');
+                    if (file_exists($logoAltPath)) {
+                        $type = pathinfo($logoAltPath, PATHINFO_EXTENSION);
+                        $logoData = file_get_contents($logoAltPath);
+                        $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($logoData);
+                    }
+                }
+            }
+        @endphp
+        <img src="{{ $logoBase64 }}" alt="Logo Kominfo" class="logo">
         <div class="kominfo-header">
-            <div class="title">KEMENTERIAN KOMUNIKASI DAN INFORMATIKA RI</div>
-            <div class="title">DIREKTORAT JENDERAL APLIKASI INFORMATIKA</div>
-            <div class="title">DIREKTORAT PENGENDALIAN APLIKASI INFORMATIKA</div>
-            <div class="motto">Indonesia Terkoneksi: Makin Digital, Makin Maju</div>
-            <div class="address">Jl. Medan Merdeka Barat No. 9, Jakarta 10110 Telp./Fax. (021) 3845786 www.kominfo.go.id</div>
+            <div class="title">KEMENTERIAN KOMUNIKASI DAN DIGITRAL RI</div>
+            <div class="title">DIREKTORAT JENDERAL KOMUNIKASI PUBLIK DAN MEDIA</div>
         </div>
     </div>
     
@@ -238,7 +263,22 @@
                                 <div class="image-container">
                                     @php
                                         $type = pathinfo($path, PATHINFO_EXTENSION);
-                                        $data = file_get_contents($path);
+                                        // Baca file dan reduksi ukurannya
+                                        if(filesize($path) > 500000) { // Jika lebih dari 500KB
+                                            $image = imagecreatefromstring(file_get_contents($path));
+                                            // Reduksi ukuran gambar ke 50% dengan kualitas 70%
+                                            $width = imagesx($image) * 0.5;
+                                            $height = imagesy($image) * 0.5;
+                                            $resized = imagecreatetruecolor($width, $height);
+                                            imagecopyresampled($resized, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image));
+                                            ob_start();
+                                            imagejpeg($resized, null, 70);
+                                            $data = ob_get_clean();
+                                            imagedestroy($image);
+                                            imagedestroy($resized);
+                                        } else {
+                                            $data = file_get_contents($path);
+                                        }
                                         $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                                     @endphp
                                     <img src="{{ $base64 }}" alt="{{ basename($doc) }}">
@@ -298,7 +338,22 @@
                         <div class="screenshot-container">
                             @php
                                 $type = pathinfo($path, PATHINFO_EXTENSION);
-                                $data = file_get_contents($path);
+                                // Baca file dan reduksi ukurannya
+                                if(filesize($path) > 500000) { // Jika lebih dari 500KB
+                                    $image = imagecreatefromstring(file_get_contents($path));
+                                    // Reduksi ukuran gambar ke 50% dengan kualitas 70%
+                                    $width = imagesx($image) * 0.5;
+                                    $height = imagesy($image) * 0.5;
+                                    $resized = imagecreatetruecolor($width, $height);
+                                    imagecopyresampled($resized, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image));
+                                    ob_start();
+                                    imagejpeg($resized, null, 70);
+                                    $data = ob_get_clean();
+                                    imagedestroy($image);
+                                    imagedestroy($resized);
+                                } else {
+                                    $data = file_get_contents($path);
+                                }
                                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                             @endphp
                             <img src="{{ $base64 }}" alt="Screenshot">

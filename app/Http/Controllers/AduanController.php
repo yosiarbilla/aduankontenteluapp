@@ -328,9 +328,20 @@ class AduanController extends Controller
 
     public function exportPdf($id)
     {
+        // Set unlimited execution time untuk function ini
+        ini_set('max_execution_time', 300); // 5 menit
+        ini_set('memory_limit', '512M');   // Tambah batas memori
+        
         $aduan = Aduan::with('user')->findOrFail($id);
 
-        $pdf = PDF::setOptions(['isRemoteEnabled' => true])
+        $pdf = PDF::setOptions([
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+                'isPhpEnabled' => true,
+                'defaultFont' => 'Arial',
+                'dpi' => 72,
+                'debugCss' => false,
+            ])
             ->loadView('aduan.export-pdf', compact('aduan'))
             ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
 
