@@ -64,6 +64,7 @@
                             <thead>
                                 <tr class="text-muted">
                                     <th>Nama</th>
+                                    <th>Pangkat</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Tanggal Dibuat</th>
@@ -74,6 +75,7 @@
                                 @forelse ($users as $user)
                                     <tr>
                                         <td>{{ $user->name }}</td>
+                                        <td>{{ $user->pangkat ?? '-' }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             <span class="badge bg-{{ $user->role_id == 1 ? 'danger' : ($user->role_id == 2 ? 'warning' : ($user->role_id == 3 ? 'info' : 'secondary')) }}">

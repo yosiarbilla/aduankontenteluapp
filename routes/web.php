@@ -19,10 +19,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile routes (from Breeze)
-    Route::get('/profileshow', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile-show', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile-edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile-update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile-destroy', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Instansi dan Tentang kami routes - dapat diakses semua user terautentikasi
     Route::get('/instansi', [InstansiController::class, 'instansi'])->name('instansi');

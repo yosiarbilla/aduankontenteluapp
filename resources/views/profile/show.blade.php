@@ -35,6 +35,7 @@
         object-fit: cover;
         border-radius: 8px;
         margin-bottom: 10px;
+        border: 1px solid #ddd;
     }
     /* Tiap baris info */
     .profile-info {
@@ -98,15 +99,27 @@
             <span class="detail-label">Nama Lengkap</span>
           </div>
           <div class="col-md-9">
-            John Asep
+            {{ $user->name }}
           </div>
         </div>
+        @if($user->pangkat)
         <div class="row mb-3">
           <div class="col-md-3">
-            <span class="detail-label">Jabatan</span>
+            <span class="detail-label">Pangkat</span>
           </div>
           <div class="col-md-9">
-            Kolonel
+            {{ $user->pangkat }}
+          </div>
+        </div>
+        @endif
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <span class="detail-label">Role</span>
+          </div>
+          <div class="col-md-9">
+            <span class="badge bg-{{ $user->role_id == 1 ? 'danger' : ($user->role_id == 2 ? 'warning' : ($user->role_id == 3 ? 'info' : 'secondary')) }}">
+                {{ $user->role->name ?? 'Tidak Ada Role' }}
+            </span>
           </div>
         </div>
         <div class="row mb-3">
@@ -114,25 +127,13 @@
             <span class="detail-label">Foto</span>
           </div>
           <div class="col-md-9">
-            <div class="logo-container">
-              <img src="{{ asset('images/logo.png') }}" alt="Logo Instansi" class="img-fluid">
+            <div class="foto-container">
+              @if($user->foto)
+                <img src="{{ asset('storage/profile/' . $user->foto) }}" alt="Foto Profil" class="img-fluid">
+              @else
+                <img src="{{ asset('images/logo.png') }}" alt="Default Logo" class="img-fluid">
+              @endif
             </div>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <span class="detail-label">Nomor Telepon</span>
-          </div>
-          <div class="col-md-9">
-            08512345678
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <span class="detail-label">Alamat</span>
-          </div>
-          <div class="col-md-9">
-            Jl. Veteran No.5, Gambir, Jakarta Pusat
           </div>
         </div>
         <div class="row mb-3">
@@ -140,16 +141,50 @@
             <span class="detail-label">Email</span>
           </div>
           <div class="col-md-9">
-            Johndoe@gmail.com
+            {{ $user->email }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <span class="detail-label">Nomor Telepon</span>
+          </div>
+          <div class="col-md-9">
+            {{ $user->phone ?? '-' }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <span class="detail-label">Terdaftar Sejak</span>
+          </div>
+          <div class="col-md-9">
+            {{ $user->created_at->format('d F Y') }}
           </div>
         </div>
       </div>
       <div class="edit-profile-container">
-                    <a href="#" class="edit-profile-btn">
-                        <i class="fas fa-edit"></i> Edit Profil
-                    </a>
-                </div>
+        <a href="{{ route('profile.edit') }}" class="edit-profile-btn">
+            <i class="fas fa-edit"></i> Edit Profil
+        </a>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Sweet Alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sweet Alert untuk notifikasi sukses
+    @if(session('success'))
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: '{{ session('success') }}',
+      timer: 3000,
+      showConfirmButton: false
+    });
+    @endif
+  });
+</script>
 @endsection

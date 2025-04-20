@@ -209,17 +209,18 @@ li {
 	left: 60px;
 }
 /* NAVBAR */
-nav {
-	background: var(--light);
+#content nav {
 	height: 64px;
-	padding: 0 20px;
+	background: var(--light);
+	padding: 0 24px 0 0;
 	display: flex;
 	align-items: center;
-	grid-gap: 28px;
-	position: sticky;
-	top: 0;
+	grid-gap: 24px;
+	position: sticky !important;
+	top: 0 !important;
 	left: 0;
-	z-index: 100;
+	z-index: 1000;
+	box-shadow: 0 1px 5px rgba(0,0,0,0.1);
 }
 nav .toggle-sidebar {
 	font-size: 18px;
