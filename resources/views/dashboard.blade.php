@@ -20,8 +20,8 @@
         height: 200px;
         object-fit: cover;
         filter: brightness(0.35); /* Mencerahkan gambar */
-    opacity: 0.5; /* Transparansi pada gambar */
-    background-color:green!important;
+        opacity: 0.5; /* Transparansi pada gambar */
+        background-color:green!important;
      
     }
 
@@ -159,13 +159,48 @@
     .modal-open {
         overflow: hidden;
     }
+    
+    /* Badge styling for priority */
+    .badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    /* Table hover effect */
+    .table-hover tbody tr:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+    
+    /* Ticket ID styling */
+    .ticket-id {
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    /* Custom badge colors for status */
+    .badge-normal {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-medium {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    .badge-high {
+        background-color: #fd7e14;
+        color: white;
+    }
+    
+    .badge-urgent {
+        background-color: #dc3545;
+        color: white;
+    }
 </style>
 
-
-
 @section('isi')
-
-
     <!-- Informasi Umum -->
     <h5>Informasi Umum</h5>
     <div class="row mb-4">
@@ -200,13 +235,13 @@
 
     <!-- Aduan Terakhir -->
     <div class="card-header d-flex justify-content-between">
-            <h5>Aduan Terakhir</h5>
-            <a href="{{ route('aduan.index') }}" class="text-success">Lihat Lebih Detail Semua Aduan</a>
-        </div>
+        <h5>Aduan Terakhir</h5>
+        <a href="{{ route('aduan.index') }}" class="text-success">Lihat Lebih Detail Semua Aduan</a>
+    </div>
     <div class="card shadow-sm">
         <div class="card-body">
-            <div class="table-responsive table-borderless">
-                <table class="table table-borderless">
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover">
                     <thead>
                         <tr>
                             <th>Tiket ID</th>
@@ -222,15 +257,17 @@
                     <tbody>
                         @forelse($aduan as $item)
                         <tr>
-                            <td class="text-primary">{{ $item->ticket_id }}</td>
+                            <td><span class="ticket-id">{{ $item->ticket_id }}</span></td>
                             <td>{{ $item->kategori }}</td>
                             <td>
                                 @if($item->prioritas == 'Normal')
-                                    <span class="badge bg-success">Normal</span>
-                                @elseif($item->prioritas == 'Medium' || $item->prioritas == 'High')
-                                    <span class="badge bg-warning">{{ $item->prioritas }}</span>
+                                    <span class="badge badge-normal">Normal</span>
+                                @elseif($item->prioritas == 'Medium')
+                                    <span class="badge badge-medium">Medium</span>
+                                @elseif($item->prioritas == 'High')
+                                    <span class="badge badge-high">High</span>
                                 @elseif($item->prioritas == 'Urgent')
-                                    <span class="badge bg-danger">Urgent</span>
+                                    <span class="badge badge-urgent">Urgent</span>
                                 @else
                                     <span class="badge bg-secondary">{{ $item->prioritas }}</span>
                                 @endif
@@ -297,12 +334,12 @@
                 </div>
                 
                 <div class="text-muted">
-                    Tampilkan isi {{ $aduan->firstItem() ?? 0 }} to {{ $aduan->lastItem() ?? 0 }} of {{ $aduan->total() }}
+                    Tampilkan isi {{ $aduan->firstItem() ?? 0 }} sampai {{ $aduan->lastItem() ?? 0 }} dari {{ $aduan->total() }}
                 </div>
                 @else
                 <div></div>
                 <div class="text-muted">
-                    Tampilkan isi 1 to {{ count($aduan) }} of {{ count($aduan) }}
+                    Tampilkan isi 1 sampai {{ count($aduan) }} dari {{ count($aduan) }}
                 </div>
                 @endif
             </div>
@@ -324,11 +361,11 @@
             <div class="modal-body">
                 <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
                 <ol>
-                    <li>1.  Buka menu Aduan</li>
-                    <li>2. Pilih Buat Aduan</li>
-                    <li>3. Isi form sesuai informasi yang ada</li>
-                    <li>4. Pastikan seluruh informasi telah benar</li>
-                    <li>5. Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
+                    <li>Buka menu Aduan</li>
+                    <li>Pilih Buat Aduan</li>
+                    <li>Isi form sesuai informasi yang ada</li>
+                    <li>Pastikan seluruh informasi telah benar</li>
+                    <li>Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
                 </ol>
             </div>
             <div class="modal-footer">
@@ -360,14 +397,57 @@
             });
         }
         
-        // Modal functionality here...
+        // Modal functionality
         const modalElement = document.getElementById('infoModal');
         const customOverlay = document.getElementById('custom-modal-overlay');
         const modalTriggers = document.querySelectorAll('.modal-trigger');
         const closeButtons = document.querySelectorAll('.close-modal');
         
-        // Function to open modal
-        function openModal() {
+        // Function to open modal with dynamic content
+        function openModal(contentType) {
+            const modalTitle = document.querySelector('#infoModalLabel');
+            const modalBody = document.querySelector('.modal-body');
+            
+            // Set content based on the triggered element
+            if (contentType === 'aduan') {
+                modalTitle.textContent = 'Tata Cara Pengisian Aduan';
+                modalBody.innerHTML = `
+                    <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
+                    <ol class="ps-3">
+                        <li>Buka menu Aduan</li>
+                        <li>Pilih Buat Aduan</li>
+                        <li>Isi form sesuai informasi yang ada</li>
+                        <li>Pastikan seluruh informasi telah benar</li>
+                        <li>Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
+                    </ol>
+                `;
+            } else if (contentType === 'pemberitahuan') {
+                modalTitle.textContent = 'Pemberitahuan Hari Ini';
+                modalBody.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6>Update Sistem - 21 April 2025</h6>
+                        <p>Sistem aduan konten telah diperbarui dengan fitur baru untuk memudahkan pelaporan. Silakan gunakan fitur terbaru kami untuk pengalaman yang lebih baik.</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <h6>Maintenance Terjadwal</h6>
+                        <p>Sistem akan mengalami pemeliharaan pada tanggal 25 April 2025 pukul 22:00 - 01:00 WIB. Mohon maaf atas ketidaknyamanannya.</p>
+                    </div>
+                `;
+            } else if (contentType === 'tni-siber') {
+                modalTitle.textContent = 'Kenali Lebih Dalam TNI Siber';
+                modalBody.innerHTML = `
+                    <img src="{{ asset('images/laptop3.jpg') }}" alt="TNI Siber" class="img-fluid mb-3">
+                    <p>TNI Siber adalah satuan yang bertugas untuk melindungi ruang siber Indonesia dari berbagai ancaman. Sebagai bagian dari pertahanan negara, TNI Siber memiliki peran strategis dalam mengamankan infrastruktur digital nasional.</p>
+                    <p>Tugas utama TNI Siber meliputi:</p>
+                    <ul class="ps-3">
+                        <li>Melakukan operasi siber untuk kepentingan pertahanan</li>
+                        <li>Melindungi infrastruktur kritis negara dari serangan siber</li>
+                        <li>Melakukan pengamanan terhadap sistem informasi strategis</li>
+                        <li>Memberikan dukungan teknis terhadap unit-unit TNI lainnya</li>
+                    </ul>
+                `;
+            }
+            
             // Show the custom overlay
             customOverlay.style.display = 'block';
             
@@ -396,7 +476,8 @@
         modalTriggers.forEach(trigger => {
             trigger.addEventListener('click', function(e) {
                 e.preventDefault();
-                openModal();
+                const contentType = this.getAttribute('data-content');
+                openModal(contentType);
             });
         });
         
@@ -414,12 +495,6 @@
                 closeModal();
             }
         });
-        
-        // Open modal on page load if needed
-        // const shouldOpenModal = true; // Set this based on your logic
-        // if (shouldOpenModal) {
-        //     openModal();
-        // }
     });
 </script>
 @endsection
