@@ -383,16 +383,16 @@
                             <td>{{ $item->created_at->format('d/m/Y') }}</td>
                             <td>{{ $item->updated_at->diffForHumans() }}</td>
                             <td>
-                                @if($item->status == 'pending')
+                                @if(isset($item->status) && $item->status == 'pending')
                                     <span class="badge bg-warning">Pending</span>
-                                @elseif($item->status == 'active')
+                                @elseif(isset($item->status) && $item->status == 'active')
                                     <span class="badge bg-primary">Aktif</span>
-                                @elseif($item->status == 'selesai')
+                                @elseif(isset($item->status) && $item->status == 'selesai')
                                     <span class="badge bg-success">Selesai</span>
-                                @elseif($item->status == 'draft')
+                                @elseif(isset($item->status) && $item->status == 'draft')
                                     <span class="badge bg-secondary">Draft</span>
                                 @else
-                                    <span class="badge bg-secondary">{{ $item->status }}</span>
+                                    <span class="badge bg-secondary">{{ isset($item->status) ? $item->status : 'Tidak ada status' }}</span>
                                 @endif
                             </td>
                             <td><a href="{{ route('aduan.export-pdf', $item->id) }}" class="btn btn-sm btn-outline-success">Unduh</a></td>
@@ -516,7 +516,7 @@
             });
         }
         
-        // Sorting functionality
+        // Sorting functionality for all sortable headers
         const sortableHeaders = document.querySelectorAll('th.sortable');
         sortableHeaders.forEach(header => {
             header.addEventListener('click', function(event) {
@@ -536,12 +536,20 @@
             icon.addEventListener('click', function(event) {
                 event.stopPropagation(); // Hentikan propagasi event ke parent
                 const sortBy = this.closest('th').getAttribute('data-sort');
+                const currentSortBy = document.getElementById('sort_by').value;
+                const currentSortDir = document.getElementById('sort_dir').value;
                 const isAsc = this.classList.contains('fa-chevron-up');
                 
-                // Jika ikon yang aktif diklik, reset sorting ke default
-                if (this.classList.contains('active')) {
-                    document.getElementById('sort_by').value = 'created_at';
-                    document.getElementById('sort_dir').value = 'desc';
+                // Jika mengklik panah yang sama dengan sorting yang aktif sekarang, reset ke default
+                if (sortBy === currentSortBy && 
+                    ((isAsc && currentSortDir === 'asc') || (!isAsc && currentSortDir === 'desc'))) {
+                    // Reset - hapus sorting sama sekali
+                    document.getElementById('sort_by').value = '';
+                    document.getElementById('sort_dir').value = '';
+                    
+                    // Arahkan ke URL tanpa parameter sorting
+                    window.location.href = window.location.href.split('?')[0];
+                    return;
                 } else {
                     // Set sorting berdasarkan ikon yang diklik
                     document.getElementById('sort_by').value = sortBy;
@@ -555,6 +563,7 @@
         
         // Fungsi untuk menangani sorting dari header
         function handleSort(sortBy) {
+          
             const currentSortBy = document.getElementById('sort_by').value;
             const currentSortDir = document.getElementById('sort_dir').value;
             
@@ -564,9 +573,13 @@
                     // If ascending, change to descending
                     document.getElementById('sort_dir').value = 'desc';
                 } else {
-                    // If already descending, reset to default sorting
-                    document.getElementById('sort_by').value = 'created_at';
-                    document.getElementById('sort_dir').value = 'desc';
+                    // If already descending, reset sorting completely
+                    document.getElementById('sort_by').value = '';
+                    document.getElementById('sort_dir').value = '';
+                    
+                    // Redirect to URL without sort parameters
+                    window.location.href = window.location.href.split('?')[0];
+                    return;
                 }
             } else {
                 // New column, start with ascending
@@ -697,9 +710,13 @@
                     if (currentSortDir === 'asc') {
                         document.getElementById('sort_dir').value = 'desc';
                     } else {
-                        // Reset to default
-                        document.getElementById('sort_by').value = 'created_at';
-                        document.getElementById('sort_dir').value = 'desc';
+                        // Reset completely
+                        document.getElementById('sort_by').value = '';
+                        document.getElementById('sort_dir').value = '';
+                        
+                        // Redirect to URL without sort parameters
+                        window.location.href = window.location.href.split('?')[0];
+                        return;
                     }
                 } else {
                     document.getElementById('sort_by').value = 'status';
@@ -715,11 +732,19 @@
                 icon.addEventListener('click', function(event) {
                     event.stopPropagation();
                     const isAsc = this.classList.contains('fa-chevron-up');
+                    const currentSortBy = document.getElementById('sort_by').value;
+                    const currentSortDir = document.getElementById('sort_dir').value;
                     
-                    // Jika ikon yang aktif diklik, reset sorting ke default
-                    if (this.classList.contains('active')) {
-                        document.getElementById('sort_by').value = 'created_at';
-                        document.getElementById('sort_dir').value = 'desc';
+                    // Jika mengklik panah yang sama dengan sorting yang aktif sekarang, reset ke default
+                    if (currentSortBy === 'status' && 
+                        ((isAsc && currentSortDir === 'asc') || (!isAsc && currentSortDir === 'desc'))) {
+                        // Reset - hapus sorting sama sekali
+                        document.getElementById('sort_by').value = '';
+                        document.getElementById('sort_dir').value = '';
+                        
+                        // Arahkan ke URL tanpa parameter sorting
+                        window.location.href = window.location.href.split('?')[0];
+                        return;
                     } else {
                         document.getElementById('sort_by').value = 'status';
                         document.getElementById('sort_dir').value = isAsc ? 'asc' : 'desc';

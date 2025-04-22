@@ -99,21 +99,21 @@
         .pagination {
             justify-content: center;
         }
-    }
-    
-    @media (max-width: 768px) {
-        .card {
-            margin-bottom: 20px;
-            /* Beri jarak antar kartu */
-            padding: 15px;
-            /* Tambahkan padding agar lebih rapi */
         }
 
-        .col-md-3 {
-            width: 100%;
-            /* Buat setiap card menjadi full width agar tidak kecil */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 20px;
+                /* Beri jarak antar kartu */
+                padding: 15px;
+                /* Tambahkan padding agar lebih rapi */
+            }
+
+            .col-md-3 {
+                width: 100%;
+                /* Buat setiap card menjadi full width agar tidak kecil */
+            }
         }
-    }
 
     .card-stats {
         transition: all 0.3s ease;
@@ -282,22 +282,22 @@
     .text-muted th {
         color: initial;
     }
-</style>
+    </style>
 
-@if(Auth::user()->role_id != null)
-<div class="container-fluid mt-6">
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    @if(Auth::user()->role_id != null)
+    <div class="container-fluid mt-6">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
 
-    <!-- Statistik Aduan -->
-    <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
-    <div class="row mb-4">
-        <div class="col-md-3">
+        <!-- Statistik Aduan -->
+        <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
+        <div class="row mb-4">
+            <div class="col-md-3">
             <a href="{{ route('aduan.index', ['status' => 'pending']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -307,8 +307,8 @@
                     </div>
                 </div>
             </a>
-        </div>
-        <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
             <a href="{{ route('aduan.index', ['status' => 'active']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -318,8 +318,8 @@
                     </div>
                 </div>
             </a>
-        </div>
-        <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
             <a href="{{ route('aduan.index', ['status' => 'selesai']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -329,8 +329,8 @@
                     </div>
                 </div>
             </a>
-        </div>
-        <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
             <a href="{{ route('aduan.index', ['status' => 'draft']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -341,24 +341,24 @@
                 </div>
             </a>
         </div>
-    </div>
-
-    <!-- Semua Aduan -->
-    <div class="row">
-        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-            <!-- Judul disesuaikan berdasarkan role -->
-            @if (Auth::user()->role_id == 4)
-                <h5>Aduan Saya</h5>
-            @else
-                <h5>Semua Aduan</h5>
-            @endif
-            <a href="{{ route('aduan.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Buat Aduan</a>
         </div>
 
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <!-- Detail Pencarian -->
+        <!-- Semua Aduan -->
+        <div class="row">
+            <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+                <!-- Judul disesuaikan berdasarkan role -->
+                @if (Auth::user()->role_id == 4)
+                    <h5>Aduan Saya</h5>
+                @else
+                    <h5>Semua Aduan</h5>
+                @endif
+                <a href="{{ route('aduan.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Buat Aduan</a>
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Detail Pencarian -->
                     <h6>Detail Pencarian @if(request()->hasAny(['search', 'kategori', 'status', 'date_from', 'date_to'])) <small class="text-success">(Filter aktif)</small> @endif</h6>
                     <form action="{{ route('aduan.index') }}" method="GET" id="search-form">
                         <div class="row mb-3">
@@ -416,12 +416,12 @@
                         <input type="hidden" name="sort_dir" id="sort_dir" value="{{ request('sort_dir', 'desc') }}">
                     </form>
 
-                    <hr>
+                        <hr>
 
-                    <!-- Tabel Aduan -->
-                    <div class="table-responsive">
+                        <!-- Tabel Aduan -->
+                        <div class="table-responsive">
                         <table class="table table-borderless table-hover {{ !request()->has('sort_by') && !request()->has('sort_dir') ? 'no-url-params' : '' }}">
-                            <thead>
+                                <thead>
                                 <tr class="table-header">
                                     <th class="sortable" onclick="sortTable('ticket_id')">
                                         Tiket ID
@@ -479,17 +479,17 @@
                                             <i class="fas fa-chevron-down {{ request('sort_by') == 'status' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
                                         </span>
                                     </th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($aduan as $item)
-                                    <!-- Filter aduan berdasarkan peran user -->
-                                    @if ((Auth::user()->role_id == 4 && Auth::id() == $item->user_id) || Auth::user()->role_id != 4)
-                                        <tr>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($aduan as $item)
+                                        <!-- Filter aduan berdasarkan peran user -->
+                                        @if ((Auth::user()->role_id == 4 && Auth::id() == $item->user_id) || Auth::user()->role_id != 4)
+                                            <tr>
                                             <td><span class="ticket-id">{{ $item->ticket_id }}</span></td>
-                                            <td>{{ $item->kategori }}</td>
-                                            <td>
+                                                <td>{{ $item->kategori }}</td>
+                                                <td>
                                                 @if($item->prioritas == 'Normal')
                                                     <span class="badge badge-normal">Normal</span>
                                                 @elseif($item->prioritas == 'High')
@@ -499,9 +499,9 @@
                                                 @else
                                                     <span class="badge bg-secondary">{{ $item->prioritas }}</span>
                                                 @endif
-                                            </td>
-                                            <td>{{ $item->nomor_surat ?? '-' }}</td>
-                                            <td>{{ $item->instansi ?? '-' }}</td>
+                                                </td>
+                                                <td>{{ $item->nomor_surat ?? '-' }}</td>
+                                                <td>{{ $item->instansi ?? '-' }}</td>
                                             <td>{{ $item->created_at->format('d/m/Y') }}</td>
                                             <td>{{ $item->updated_at->diffForHumans() }}</td>
                                             <td>
@@ -517,22 +517,22 @@
                                                     <span class="badge bg-secondary">{{ $item->status }}</span>
                                                 @endif
                                             </td>
-                                            <td>
-                                                <a href="{{ route('aduan.show', $item->id) }}"
-                                                    class="btn btn-outline-success btn-sm">Detail</a>
-                                                <a href="{{ route('aduan.export-pdf', $item->id) }}" target="_blank"
-                                                    class="btn btn-outline-success btn-sm">Unduh</a>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @empty
-                                    <tr>
+                                                <td>
+                                                    <a href="{{ route('aduan.show', $item->id) }}"
+                                                        class="btn btn-outline-success btn-sm">Detail</a>
+                                                    <a href="{{ route('aduan.export-pdf', $item->id) }}" target="_blank"
+                                                        class="btn btn-outline-success btn-sm">Unduh</a>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @empty
+                                        <tr>
                                         <td colspan="9" class="text-center">Tidak ada data aduan tersedia.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     
                     <!-- Pagination Component -->
                     <div class="d-flex justify-content-between align-items-center mt-4 pagination-container">
@@ -590,30 +590,30 @@
                         </div>
                         @endif
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@else
-<div>
-    <h1 class="text-center">Hubungi Admin Untuk Mendapatkan Role</h1>
-</div>
-@endif
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    @if (session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{{ session('success') }}',
-            confirmButtonText: 'OK',
-            showCloseButton: true, // Menampilkan tombol X untuk menutup alert
-            timer: 3000
-        });
+    @else
+    <div>
+        <h1 class="text-center">Hubungi Admin Untuk Mendapatkan Role</h1>
+    </div>
     @endif
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'OK',
+                showCloseButton: true, // Menampilkan tombol X untuk menutup alert
+                timer: 3000
+            });
+        @endif
     
     document.addEventListener('DOMContentLoaded', function() {
         // Per page select handler
@@ -776,5 +776,5 @@
             updateSortingUI(sortBy, sortDir);
         }
     }
-</script>
+    </script>
 @endsection
