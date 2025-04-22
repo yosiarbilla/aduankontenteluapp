@@ -385,49 +385,8 @@
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         
-        <!-- Sweet Alert -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
         <!-- Stack for scripts -->
         @stack('scripts')
-
-        <!-- Notifikasi Sweet Alert -->
-        <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            // Tampilkan sweet alert untuk pesan sukses dari session
-            @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            @endif
-            
-            // Tampilkan sweet alert untuk pesan kesalahan dari session
-            @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: '{{ session('error') }}',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            @endif
-            
-            // Tampilkan sweet alert untuk status profile-updated
-            @if(session('status') === 'profile-updated')
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Profil berhasil diperbarui',
-                timer: 3000,
-                showConfirmButton: false
-            });
-            @endif
-          });
-        </script>
       </body>
 
       </html>

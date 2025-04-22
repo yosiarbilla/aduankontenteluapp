@@ -93,10 +93,19 @@
     }
     .info-value {
         flex-grow: 1;
-        font-weight: 500;
         font-size: 14px;
         line-height: 22px;
         color: var(--primary-color);
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    .info-value a {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        word-wrap: break-word;
     }
     .divider {
         width: 100%;
@@ -113,7 +122,6 @@
     .back-button {
         display: flex;
         align-items: center;
-        color: var(--primary-color);
         text-decoration: none;
         margin-bottom: 20px;
         font-weight: bold;
@@ -124,25 +132,37 @@
     /* Updated button styles */
     .btn-aksi {
         display: flex;
-        gap: 12px;
-        margin-top: 16px;
+        flex-wrap: wrap;
         justify-content: flex-end;
         width: 100%;
+        margin-top: 24px;
+        padding: 15px 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+    }
+    .btn-aksi form {
+        margin: 0;
+        display: inline-block;
     }
     .btn {
-        padding: 10px 20px;
-        border-radius: 4px;
+        padding: 8px 20px;
+        border-radius: 5px;
         font-weight: 600;
         font-size: 14px;
-        min-width: 140px;
+        height: 38px;
         text-align: center;
         border: none;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
         text-decoration: none;
+        margin-left: 10px;
+    }
+    .btn:first-child {
+        margin-left: 0;
     }
     .btn i {
         margin-right: 8px;
@@ -182,10 +202,64 @@
     .btn-danger:hover {
         background-color: #c82333;
     }
+    /* Media query untuk mengatur tombol menjadi vertikal di mobile */
+    @media (max-width: 767px) {
+        .btn-aksi {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        
+        .btn-aksi form {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-left: 0;
+            margin-bottom: 8px;
+        }
+        
+        .info-row, .info-row-multiline {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .info-label, .info-label-multiline {
+            width: 100%;
+        }
+    }
+    .badge {
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .bg-warning {
+        background-color: #ffc107 !important;
+        color: #212529;
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+
+    .bg-success {
+        background-color: #28a745 !important;
+        color: white;
+    }
+
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
 </style>
 
 <div class="container">
-    <a href="{{ route('dashboard') }}" class="back-button">
+    <a href="{{ route('aduan.index') }}" class="back-button">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
 
@@ -211,7 +285,11 @@
             </div>
             <div class="info-row">
                 <div class="info-label">Prioritas</div>
-                <div class="info-value">{{ $detailAduan->prioritas }}</div>
+                <div class="info-value">
+                    <span class="badge {{ $detailAduan->prioritas == 'High' ? 'bg-orange' : ($detailAduan->prioritas == 'Urgent' ? 'bg-danger' : 'bg-success') }}" style="font-size: 14px; padding: 5px 10px;">
+                        {{ $detailAduan->prioritas }}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -327,54 +405,51 @@
 
     <!-- Tombol Aksi -->
     <div class="btn-aksi">
+        <!-- Button Kembali untuk semua user -->
+    
+        
         <!-- Button Edit hanya muncul jika status draft dan user adalah pemilik aduan -->
         @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
             <a href="{{ route('aduan.edit', $detailAduan->id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil-square"></i> Edit
+                <i class="fas fa-edit"></i> Edit
             </a>
         @endif
         
         <!-- Button Kirim hanya muncul jika status draft dan user adalah pemilik aduan -->
         @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
-            <form action="{{ route('aduan.kirim', $detailAduan->id) }}" method="POST" style="display: inline;">
+            <form action="{{ route('aduan.kirim', $detailAduan->id) }}" method="POST" style="display: inline-block;">
                 @csrf
                 @method('PUT')
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-send"></i> Kirim
+                    <i class="fas fa-paper-plane"></i> Kirim
                 </button>
             </form>
         @endif
         
         <!-- Button Disetujui hanya muncul untuk manager dan jika status pending -->
         @if($detailAduan->status == 'pending' && Auth::user()->role->id == 2)
-            <form action="{{ route('aduan.approve', $detailAduan->id) }}" method="POST" style="display: inline;">
+            <form action="{{ route('aduan.approve', $detailAduan->id) }}" method="POST" style="display: inline-block;">
                 @csrf
                 @method('PUT')
                 <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle"></i> Disetujui
+                    <i class="fas fa-check-circle"></i> Disetujui
                 </button>
             </form>
             
             <!-- Button Ditolak hanya muncul untuk manager dan jika status pending -->
-            <form action="{{ route('aduan.reject', $detailAduan->id) }}" method="POST" style="display: inline;">
+            <form action="{{ route('aduan.reject', $detailAduan->id) }}" method="POST" style="display: inline-block;">
                 @csrf
                 @method('PUT')
                 <button type="submit" class="btn btn-danger">
-                    <i class="bi bi-x-circle"></i> Ditolak
+                    <i class="fas fa-times-circle"></i> Ditolak
                 </button>
             </form>
         @endif
         
         <!-- Button Export PDF untuk semua user -->
         <a href="{{ route('aduan.export-pdf', $detailAduan->id) }}" class="btn btn-info">
-            <i class="bi bi-file-pdf"></i> Export PDF
+            <i class="fas fa-file-pdf"></i> Export PDF
         </a>
-        
-        <!-- Button Kembali untuk semua user -->
-        <a href="{{ route('aduan.index') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali
-        </a>
-        <!-- Tambahkan di awal view untuk debugging -->
     </div>
 </div>
 @endsection

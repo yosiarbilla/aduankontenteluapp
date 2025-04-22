@@ -198,6 +198,58 @@
         background-color: #dc3545;
         color: white;
     }
+
+    /* Sorting styles */
+    .sort-icon {
+        display: inline-block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 8px;
+        top: calc(50% - 10px);
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .sort-icon i {
+        font-size: 12px;
+        color: #adb5bd;
+        position: absolute;
+        left: 0;
+        transition: color 0.2s ease;
+    }
+
+    .sort-icon i.fa-chevron-up {
+        top: 0;
+    }
+
+    .sort-icon i.fa-chevron-down {
+        bottom: 0;
+    }
+
+    .sort-icon i.active {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .sort-icon:hover i {
+        color: #6c757d;
+    }
+
+    th.sortable {
+        cursor: pointer;
+        position: relative;
+        padding-right: 30px !important;
+        user-select: none;
+    }
+
+    th.sortable:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+
+    th.sortable.sorted {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
 </style>
 
 @section('isi')
@@ -240,17 +292,71 @@
     </div>
     <div class="card shadow-sm">
         <div class="card-body">
+            <form id="sort-form" action="{{ url()->current() }}" method="GET">
+                <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
+                <input type="hidden" name="sort_by" id="sort_by" value="{{ request('sort_by', 'created_at') }}">
+                <input type="hidden" name="sort_dir" id="sort_dir" value="{{ request('sort_dir', 'desc') }}">
+            </form>
             <div class="table-responsive">
                 <table class="table table-borderless table-hover">
                     <thead>
                         <tr>
-                            <th>Tiket ID</th>
-                            <th>Kategori</th>
-                            <th>Prioritas</th>
-                            <th>Nomor Surat</th>
-                            <th>Instansi</th>
-                            <th>Submit</th>
-                            <th>Update</th>
+                            <th class="sortable" data-sort="ticket_id">
+                                Tiket ID
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'ticket_id' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'ticket_id' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="kategori">
+                                Kategori
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'kategori' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'kategori' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="prioritas">
+                                Prioritas
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'prioritas' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'prioritas' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="nomor_surat">
+                                Nomor Surat
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'nomor_surat' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'nomor_surat' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="instansi">
+                                Instansi
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'instansi' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'instansi' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="created_at">
+                                Submit
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'created_at' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'created_at' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="updated_at">
+                                Update
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'updated_at' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'updated_at' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-sort="status">
+                                Status
+                                <span class="sort-icon">
+                                    <i class="fas fa-chevron-up {{ request('sort_by') == 'status' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                    <i class="fas fa-chevron-down {{ request('sort_by') == 'status' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                </span>
+                            </th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -276,11 +382,24 @@
                             <td>{{ $item->instansi }}</td>
                             <td>{{ $item->created_at->format('d/m/Y') }}</td>
                             <td>{{ $item->updated_at->diffForHumans() }}</td>
+                            <td>
+                                @if($item->status == 'pending')
+                                    <span class="badge bg-warning">Pending</span>
+                                @elseif($item->status == 'active')
+                                    <span class="badge bg-primary">Aktif</span>
+                                @elseif($item->status == 'selesai')
+                                    <span class="badge bg-success">Selesai</span>
+                                @elseif($item->status == 'draft')
+                                    <span class="badge bg-secondary">Draft</span>
+                                @else
+                                    <span class="badge bg-secondary">{{ $item->status }}</span>
+                                @endif
+                            </td>
                             <td><a href="{{ route('aduan.export-pdf', $item->id) }}" class="btn btn-sm btn-outline-success">Unduh</a></td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-3">Belum ada data aduan</td>
+                            <td colspan="9" class="text-center py-3">Belum ada data aduan</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -397,6 +516,77 @@
             });
         }
         
+        // Sorting functionality
+        const sortableHeaders = document.querySelectorAll('th.sortable');
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function(event) {
+                // Jika yang diklik adalah ikon, biarkan event handler ikon yang menangani
+                if (event.target.closest('.sort-icon')) {
+                    return;
+                }
+                
+                const sortBy = this.getAttribute('data-sort');
+                handleSort(sortBy);
+            });
+        });
+        
+        // Tambahan untuk ikon panah
+        const sortIcons = document.querySelectorAll('.sort-icon i');
+        sortIcons.forEach(icon => {
+            icon.addEventListener('click', function(event) {
+                event.stopPropagation(); // Hentikan propagasi event ke parent
+                const sortBy = this.closest('th').getAttribute('data-sort');
+                const isAsc = this.classList.contains('fa-chevron-up');
+                
+                // Jika ikon yang aktif diklik, reset sorting ke default
+                if (this.classList.contains('active')) {
+                    document.getElementById('sort_by').value = 'created_at';
+                    document.getElementById('sort_dir').value = 'desc';
+                } else {
+                    // Set sorting berdasarkan ikon yang diklik
+                    document.getElementById('sort_by').value = sortBy;
+                    document.getElementById('sort_dir').value = isAsc ? 'asc' : 'desc';
+                }
+                
+                // Submit form
+                document.getElementById('sort-form').submit();
+            });
+        });
+        
+        // Fungsi untuk menangani sorting dari header
+        function handleSort(sortBy) {
+            const currentSortBy = document.getElementById('sort_by').value;
+            const currentSortDir = document.getElementById('sort_dir').value;
+            
+            // Check if clicking the same column that's already sorted
+            if (sortBy === currentSortBy) {
+                if (currentSortDir === 'asc') {
+                    // If ascending, change to descending
+                    document.getElementById('sort_dir').value = 'desc';
+                } else {
+                    // If already descending, reset to default sorting
+                    document.getElementById('sort_by').value = 'created_at';
+                    document.getElementById('sort_dir').value = 'desc';
+                }
+            } else {
+                // New column, start with ascending
+                document.getElementById('sort_by').value = sortBy;
+                document.getElementById('sort_dir').value = 'asc';
+            }
+            
+            // Submit the form
+            document.getElementById('sort-form').submit();
+        }
+        
+        // Highlight the current sorted column
+        const currentSortBy = document.getElementById('sort_by').value;
+        if (currentSortBy) {
+            const sortedHeader = document.querySelector(`th[data-sort="${currentSortBy}"]`);
+            if (sortedHeader) {
+                sortedHeader.classList.add('sorted');
+            }
+        }
+        
         // Modal functionality
         const modalElement = document.getElementById('infoModal');
         const customOverlay = document.getElementById('custom-modal-overlay');
@@ -495,6 +685,50 @@
                 closeModal();
             }
         });
+
+        // Fungsi untuk menangani kolom Status yang belum punya data-sort
+        const statusColumn = document.querySelector('th.sortable[onclick*="sortTable"]');
+        if (statusColumn) {
+            statusColumn.addEventListener('click', function() {
+                const currentSortBy = document.getElementById('sort_by').value;
+                const currentSortDir = document.getElementById('sort_dir').value;
+                
+                if (currentSortBy === 'status') {
+                    if (currentSortDir === 'asc') {
+                        document.getElementById('sort_dir').value = 'desc';
+                    } else {
+                        // Reset to default
+                        document.getElementById('sort_by').value = 'created_at';
+                        document.getElementById('sort_dir').value = 'desc';
+                    }
+                } else {
+                    document.getElementById('sort_by').value = 'status';
+                    document.getElementById('sort_dir').value = 'asc';
+                }
+                
+                document.getElementById('sort-form').submit();
+            });
+            
+            // Juga tambahkan event listener untuk icon di kolom Status
+            const statusIcons = statusColumn.querySelectorAll('.sort-icon i');
+            statusIcons.forEach(icon => {
+                icon.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const isAsc = this.classList.contains('fa-chevron-up');
+                    
+                    // Jika ikon yang aktif diklik, reset sorting ke default
+                    if (this.classList.contains('active')) {
+                        document.getElementById('sort_by').value = 'created_at';
+                        document.getElementById('sort_dir').value = 'desc';
+                    } else {
+                        document.getElementById('sort_by').value = 'status';
+                        document.getElementById('sort_dir').value = isAsc ? 'asc' : 'desc';
+                    }
+                    
+                    document.getElementById('sort-form').submit();
+                });
+            });
+        }
     });
 </script>
 @endsection

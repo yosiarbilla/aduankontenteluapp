@@ -99,8 +99,25 @@ class AduanController extends Controller
             $query->whereDate('created_at', '<=', request('date_to'));
         }
         
-        // Sort by newest first
-        $query->orderBy('created_at', 'desc');
+        // Apply sorting
+        $sortBy = request('sort_by');
+        $sortDir = request('sort_dir', 'desc');
+        
+        // Validate sortable columns to prevent SQL injection
+        $allowedSortColumns = [
+            'ticket_id', 'kategori', 'prioritas', 'nomor_surat', 
+            'instansi', 'created_at', 'updated_at'
+        ];
+        
+        // Only apply sorting if sort_by is explicitly set in the request
+        if ($sortBy && in_array($sortBy, $allowedSortColumns)) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            // Get data without explicit ordering
+            // We'll still use created_at desc for database efficiency,
+            // but we won't highlight it in the UI
+            $query->orderBy('created_at', 'desc');
+        }
         
         // Get paginated results
         $aduan = $query->paginate($perPage)->withQueryString();

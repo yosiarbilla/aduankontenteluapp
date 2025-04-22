@@ -21,6 +21,18 @@
         padding: 5px 10px;
         border-radius: 20px;
     }
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+    }
     .table-borderless th,
     .table-borderless td {
         border: none;
@@ -102,6 +114,174 @@
             /* Buat setiap card menjadi full width agar tidak kecil */
         }
     }
+
+    .card-stats {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-stats:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-stats.active {
+        border-left: 4px solid #28a745;
+    }
+
+    .card-stats::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .card-stats:hover::after {
+        background: #28a745;
+    }
+
+    /* Sorting styles */
+    .sort-icon {
+        display: inline-block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 8px;
+        top: calc(50% - 10px);
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .sort-icon i {
+        font-size: 12px;
+        color: #495057;
+        position: absolute;
+        left: 0;
+        transition: color 0.2s ease;
+    }
+
+    .sort-icon i.fa-chevron-up {
+        top: 0;
+    }
+
+    .sort-icon i.fa-chevron-down {
+        bottom: 0;
+    }
+
+    .sort-icon i.active {
+        color: #28a745 !important;
+        font-weight: bold;
+    }
+
+    .sort-icon:hover i {
+        color: #6c757d;
+    }
+
+    th.sortable {
+        cursor: pointer;
+        position: relative;
+        padding-right: 30px !important;
+        user-select: none;
+    }
+
+    th.sortable:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+        color: #212529 !important;
+    }
+
+    th.sortable.active {
+        background-color: rgba(40, 167, 69, 0.1);
+        font-weight: bold;
+    }
+    
+    .default-sort {
+        display: inline-block;
+        transition: opacity 0.5s ease;
+        vertical-align: middle;
+    }
+    
+    /* Badge styling for priority */
+    .badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    /* Table hover effect */
+    .table-hover tbody tr:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+    
+    /* Ticket ID styling */
+    .ticket-id {
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    /* Custom badge colors for status */
+    .badge-normal {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-high {
+        background-color: #fd7e14;
+        color: white;
+    }
+    
+    .badge-urgent {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    /* Hide all active indicators by default unless explicitly set by the user */
+    .no-url-params th.sortable i.active {
+        color: #adb5bd !important;
+    }
+    
+    .no-url-params th.sortable.active {
+        background-color: transparent !important;
+        font-weight: normal !important;
+    }
+
+    /* Table header styling - dengan selector yang lebih spesifik */
+    .table.table-borderless.table-hover thead th,
+    .table.table-borderless.table-hover th.sortable {
+        color: #212529 !important; /* Warna hitam untuk header kolom */
+        font-weight: 600;
+    }
+    
+    /* Ensure text-muted doesn't override our header color - dengan scope lebih spesifik */
+    .card-body .table-header th {
+        color: #212529 !important;
+    }
+    
+    /* Batasi scope hanya untuk tabel di halaman aduan */
+    .card-body .table-responsive th.sortable:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+        color: #212529 !important; /* Tetap hitam saat hover */
+    }
+
+    /* Override text-muted for table headers - dengan scope yang lebih sempit */
+    .card-body .table-responsive tr.table-header th,
+    .card-body .table-responsive .table thead tr th {
+        color: #212529 !important;
+    }
+    
+    /* Remove overly broad selectors */
+    .text-muted.table-header {
+        color: initial;
+    }
+    
+    .text-muted th {
+        color: initial;
+    }
 </style>
 
 @if(Auth::user()->role_id != null)
@@ -118,40 +298,48 @@
     <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-warning"><i class="fas fa-clock"></i></h5>
-                    <h2 class="card-text">{{ $jumlahPending }}</h2>
-                    <p class="text-muted">Aduan Pending</p>
+            <a href="{{ route('aduan.index', ['status' => 'pending']) }}" class="text-decoration-none">
+                <div class="card text-center card-stats">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning"><i class="fas fa-clock"></i></h5>
+                        <h2 class="card-text">{{ $jumlahPending }}</h2>
+                        <p class="text-muted">Aduan Pending</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="fas fa-clipboard-check"></i></h5>
-                    <h2 class="card-text">{{ $jumlahAktif }}</h2>
-                    <p class="text-muted">Aduan Aktif</p>
+            <a href="{{ route('aduan.index', ['status' => 'active']) }}" class="text-decoration-none">
+                <div class="card text-center card-stats">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary"><i class="fas fa-clipboard-check"></i></h5>
+                        <h2 class="card-text">{{ $jumlahAktif }}</h2>
+                        <p class="text-muted">Aduan Aktif</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-success"><i class="fas fa-check-circle"></i></h5>
-                    <h2 class="card-text">{{ $jumlahSelesai }}</h2>
-                    <p class="text-muted">Aduan Selesai</p>
+            <a href="{{ route('aduan.index', ['status' => 'selesai']) }}" class="text-decoration-none">
+                <div class="card text-center card-stats">
+                    <div class="card-body">
+                        <h5 class="card-title text-success"><i class="fas fa-check-circle"></i></h5>
+                        <h2 class="card-text">{{ $jumlahSelesai }}</h2>
+                        <p class="text-muted">Aduan Selesai</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary"><i class="fas fa-file-alt"></i></h5>
-                    <h2 class="card-text">{{ $jumlahDraft }}</h2>
-                    <p class="text-muted">Draf Aduan</p>
+            <a href="{{ route('aduan.index', ['status' => 'draft']) }}" class="text-decoration-none">
+                <div class="card text-center card-stats">
+                    <div class="card-body">
+                        <h5 class="card-title text-secondary"><i class="fas fa-file-alt"></i></h5>
+                        <h2 class="card-text">{{ $jumlahDraft }}</h2>
+                        <p class="text-muted">Draf Aduan</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -219,27 +407,78 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mb-4">
-                            <button type="button" id="reset-btn" class="btn btn-secondary me-2" style="width: 100px">Reset</button>
+                            <button type="button" id="reset-btn" class="btn btn-secondary me-2" style="width: 200px">Reset Filter</button>
                             <button type="submit" class="btn btn-primary" style="width: 100px">Cari</button>
                         </div>
-                        <!-- Hidden field for per_page to maintain when submitting form -->
+                        <!-- Hidden fields for sorting and pagination -->
                         <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
+                        <input type="hidden" name="sort_by" id="sort_by" value="{{ request('sort_by') }}">
+                        <input type="hidden" name="sort_dir" id="sort_dir" value="{{ request('sort_dir', 'desc') }}">
                     </form>
 
                     <hr>
 
                     <!-- Tabel Aduan -->
                     <div class="table-responsive">
-                        <table class="table table-borderless">
+                        <table class="table table-borderless table-hover {{ !request()->has('sort_by') && !request()->has('sort_dir') ? 'no-url-params' : '' }}">
                             <thead>
-                                <tr class="text-muted">
-                                    <th>Tiket ID</th>
-                                    <th>Kategori</th>
-                                    <th>Prioritas</th>
-                                    <th>Nomor Surat</th>
-                                    <th>Instansi</th>
-                                    <th>Submit</th>
-                                    <th>Update</th>
+                                <tr class="table-header">
+                                    <th class="sortable" onclick="sortTable('ticket_id')">
+                                        Tiket ID
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'ticket_id' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'ticket_id' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('kategori')">
+                                        Kategori
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'kategori' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'kategori' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('prioritas')">
+                                        Prioritas
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'prioritas' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'prioritas' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('nomor_surat')">
+                                        Nomor Surat
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'nomor_surat' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'nomor_surat' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('instansi')">
+                                        Instansi
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'instansi' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'instansi' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('created_at')">
+                                        Submit
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'created_at' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'created_at' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('updated_at')">
+                                        Update
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'updated_at' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'updated_at' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
+                                    <th class="sortable" onclick="sortTable('status')">
+                                        Status
+                                        <span class="sort-icon">
+                                            <i class="fas fa-chevron-up {{ request('sort_by') == 'status' && request('sort_dir') == 'asc' ? 'active' : '' }}"></i>
+                                            <i class="fas fa-chevron-down {{ request('sort_by') == 'status' && request('sort_dir') == 'desc' ? 'active' : '' }}"></i>
+                                        </span>
+                                    </th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -248,18 +487,36 @@
                                     <!-- Filter aduan berdasarkan peran user -->
                                     @if ((Auth::user()->role_id == 4 && Auth::id() == $item->user_id) || Auth::user()->role_id != 4)
                                         <tr>
-                                            <td class="text-primary">{{ $item->ticket_id }}</td>
+                                            <td><span class="ticket-id">{{ $item->ticket_id }}</span></td>
                                             <td>{{ $item->kategori }}</td>
                                             <td>
-                                                <span
-                                                    class="badge bg-{{ $item->prioritas == 'High' ? 'danger' : ($item->prioritas == 'Urgent' ? 'warning' : 'success') }}">
-                                                    {{ ucfirst($item->prioritas) }}
-                                                </span>
+                                                @if($item->prioritas == 'Normal')
+                                                    <span class="badge badge-normal">Normal</span>
+                                                @elseif($item->prioritas == 'High')
+                                                    <span class="badge badge-high">High</span>
+                                                @elseif($item->prioritas == 'Urgent')
+                                                    <span class="badge badge-urgent">Urgent</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $item->prioritas }}</span>
+                                                @endif
                                             </td>
                                             <td>{{ $item->nomor_surat ?? '-' }}</td>
                                             <td>{{ $item->instansi ?? '-' }}</td>
-                                            <td>{{ $item->created_at->format('d-m-Y') ?? '-' }}</td>
-                                            <td>{{ $item->updated_at->format('d-m-Y') ?? '-' }}</td>
+                                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                                            <td>{{ $item->updated_at->diffForHumans() }}</td>
+                                            <td>
+                                                @if($item->status == 'pending')
+                                                    <span class="badge bg-warning">Pending</span>
+                                                @elseif($item->status == 'active')
+                                                    <span class="badge bg-primary">Aktif</span>
+                                                @elseif($item->status == 'selesai')
+                                                    <span class="badge bg-success">Selesai</span>
+                                                @elseif($item->status == 'draft')
+                                                    <span class="badge bg-secondary">Draft</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $item->status }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <a href="{{ route('aduan.show', $item->id) }}"
                                                     class="btn btn-outline-success btn-sm">Detail</a>
@@ -270,7 +527,7 @@
                                     @endif
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center">Tidak ada data aduan tersedia.</td>
+                                        <td colspan="9" class="text-center">Tidak ada data aduan tersedia.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -378,77 +635,44 @@
         const resetBtn = document.getElementById('reset-btn');
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
-                // Check if any filter is active
+                // Check if any filter is active or sorting is applied
                 const form = document.getElementById('search-form');
                 const search = form.querySelector('input[name="search"]').value;
                 const kategori = form.querySelector('select[name="kategori"]').value;
                 const status = form.querySelector('select[name="status"]').value;
                 const dateFrom = form.querySelector('input[name="date_from"]').value;
                 const dateTo = form.querySelector('input[name="date_to"]').value;
+                const sortBy = form.querySelector('input[name="sort_by"]').value;
+                const sortDir = form.querySelector('input[name="sort_dir"]').value;
                 
-                if (search || kategori || status || dateFrom || dateTo) {
-                    // Instead of submitting the form with empty values,
-                    // redirect to the base URL to ensure all parameters are removed
-                    Swal.fire({
-                        title: 'Mereset pencarian...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    
-                    // Get the current per_page value to preserve it if needed
-                    const perPageValue = document.querySelector('input[name="per_page"]').value;
-                    const baseUrl = window.location.href.split('?')[0];
-                    
-                    // If we want to keep the per_page setting, add it to the URL
-                    const targetUrl = perPageValue && perPageValue !== '10' 
-                        ? baseUrl + '?per_page=' + perPageValue 
-                        : baseUrl;
-                    
-                    // Redirect after a short delay
-                    setTimeout(() => {
-                        window.location.href = targetUrl;
-                    }, 300);
-                } else {
-                    // No filters active, just notify user
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Tidak ada filter aktif',
-                        text: 'Tidak ada filter pencarian yang perlu direset.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
-        
-        // Form submit handler - show loading
-        const searchForm = document.getElementById('search-form');
-        const searchButton = searchForm.querySelector('button[type="submit"]');
-        
-        if (searchForm && searchButton) {
-            searchButton.addEventListener('click', function(e) {
-                // Check if any filter was changed
-                const formData = new FormData(searchForm);
-                let hasFilter = false;
+                // Check if any filter or sort is active
+                const hasActiveFilters = search || kategori || status || dateFrom || dateTo;
+                // Check if any sorting parameter exists in the URL (even default ones)
+                const hasSortingParams = sortBy || sortDir || new URLSearchParams(window.location.search).has('sort_by') || new URLSearchParams(window.location.search).has('sort_dir');
                 
-                for (const [key, value] of formData.entries()) {
-                    if (key !== 'per_page' && value) {
-                        hasFilter = true;
-                        break;
-                    }
-                }
-                
-                if (hasFilter) {
+                if (hasActiveFilters || hasSortingParams) {
+                    // Reset all form fields
+                    if (form.querySelector('input[name="search"]')) form.querySelector('input[name="search"]').value = '';
+                    if (form.querySelector('select[name="kategori"]')) form.querySelector('select[name="kategori"]').value = '';
+                    if (form.querySelector('select[name="status"]')) form.querySelector('select[name="status"]').value = '';
+                    if (form.querySelector('input[name="date_from"]')) form.querySelector('input[name="date_from"]').value = '';
+                    if (form.querySelector('input[name="date_to"]')) form.querySelector('input[name="date_to"]').value = '';
+                    
+                    // Reset sort fields to default
+                    if (form.querySelector('input[name="sort_by"]')) form.querySelector('input[name="sort_by"]').value = '';
+                    if (form.querySelector('input[name="sort_dir"]')) form.querySelector('input[name="sort_dir"]').value = '';
+                    
                     // Show loading indicator
                     Swal.fire({
-                        title: 'Mencari data...',
+                        title: 'Mereset filter...',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
                         }
                     });
+                    
+                    // Redirect to base URL without any parameters
+                    window.location.href = '{{ route('aduan.index') }}';
                 }
             });
         }
@@ -465,29 +689,92 @@
             }
         }
         
-        // Initialize date pickers with better UX
-        const dateInputs = document.querySelectorAll('input[type="date"]');
-        dateInputs.forEach(input => {
-            // Add event listener to check date range logic
-            input.addEventListener('change', function() {
-                const dateFrom = document.querySelector('input[name="date_from"]');
-                const dateTo = document.querySelector('input[name="date_to"]');
-                
-                if (dateFrom.value && dateTo.value) {
-                    if (new Date(dateFrom.value) > new Date(dateTo.value)) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Rentang tanggal tidak valid',
-                            text: 'Tanggal awal tidak boleh lebih besar dari tanggal akhir',
-                            timer: 3000
-                        });
-                        
-                        // Reset the current input
-                        this.value = '';
-                    }
-                }
-            });
-        });
+        // Mark active status card
+        const currentStatus = new URLSearchParams(window.location.search).get('status');
+        if (currentStatus) {
+            const statusCards = {
+                'pending': 0,
+                'active': 1,
+                'selesai': 2,
+                'draft': 3
+            };
+            
+            if (statusCards.hasOwnProperty(currentStatus)) {
+                const cardIndex = statusCards[currentStatus];
+                document.querySelectorAll('.card-stats')[cardIndex].classList.add('active');
+            }
+        }
+        
+        // Set up sorting for table headers
+        setupTableSorting();
     });
+    
+    // Function to handle sorting
+    function sortTable(column) {
+        const form = document.getElementById('search-form');
+        const sortByInput = form.querySelector('#sort_by');
+        const sortDirInput = form.querySelector('#sort_dir');
+        
+        // Toggle sort direction or set default
+        let direction = 'asc';
+        
+        if (sortByInput.value === column) {
+            // If already sorting by this column, toggle direction
+            direction = (sortDirInput.value === 'asc') ? 'desc' : 'asc';
+        } else if (column === 'created_at' || column === 'updated_at') {
+            // Default to descending for date columns
+            direction = 'desc';
+        }
+        
+        // Update form values
+        sortByInput.value = column;
+        sortDirInput.value = direction;
+        
+        // Update UI to reflect sorting
+        updateSortingUI(column, direction);
+        
+        // Show loading
+        Swal.fire({
+            title: 'Mengurutkan data...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                // Submit form after showing loading
+                form.submit();
+            }
+        });
+    }
+    
+    // Function to update UI for sorting
+    function updateSortingUI(column, direction) {
+        // Clear active class from all headers
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.classList.remove('active');
+            const upIcon = th.querySelector('.fa-chevron-up');
+            const downIcon = th.querySelector('.fa-chevron-down');
+            if (upIcon) upIcon.classList.remove('active');
+            if (downIcon) downIcon.classList.remove('active');
+        });
+        
+        // Add active class to current header
+        const currentHeader = document.querySelector(`th.sortable[onclick*="'${column}'"]`);
+        if (currentHeader) {
+            currentHeader.classList.add('active');
+            const directionIcon = currentHeader.querySelector(`.fa-chevron-${direction === 'asc' ? 'up' : 'down'}`);
+            if (directionIcon) directionIcon.classList.add('active');
+        }
+    }
+    
+    // Set up table sorting
+    function setupTableSorting() {
+        const params = new URLSearchParams(window.location.search);
+        const sortBy = params.get('sort_by');
+        const sortDir = params.get('sort_dir');
+        
+        // Only update UI if sort parameters are explicitly set
+        if (sortBy && sortDir) {
+            updateSortingUI(sortBy, sortDir);
+        }
+    }
 </script>
 @endsection

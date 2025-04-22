@@ -183,7 +183,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="pangkat" class="form-label">Pangkat</label>
@@ -231,7 +231,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="foto" class="form-label">Foto</label>
@@ -251,7 +251,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="phone" class="form-label">Nomor Telepon</label>
@@ -260,7 +260,7 @@
                     <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}">
                 </div>
             </div>
-            
+
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="email" class="form-label">Email</label>

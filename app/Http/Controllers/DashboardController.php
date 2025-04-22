@@ -17,6 +17,10 @@ class DashboardController extends Controller
         $perPage = $request->input('per_page', 10); // Jumlah item per halaman
         $currentPage = $request->input('page', 1);  // Halaman saat ini
         
+        // Sorting parameters
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = $request->input('sort_dir', 'desc');
+        
         // Buat query dasar berdasarkan peran pengguna
         if (Auth::user()->role_id == 3) { // Jika user biasa (role_id 3)
             // Ambil data dari API endpoint /aduan
@@ -25,10 +29,24 @@ class DashboardController extends Controller
             // Untuk admin dan peran lainnya, ambil semua aduan dari database lokal
             $query = Aduan::query();
             
+            // Apply sorting
+            if ($sortBy) {
+                // Daftar kolom yang dapat disortir
+                $validSortColumns = ['created_at', 'updated_at', 'ticket_id', 'kategori', 'prioritas', 'status', 'nomor_surat', 'instansi'];
+                
+                if (in_array($sortBy, $validSortColumns)) {
+                    $query->orderBy($sortBy, $sortDir);
+                } else {
+                    // Default sorting
+                    $query->orderBy('created_at', 'desc');
+                }
+            } else {
+                // Default sorting
+                $query->orderBy('created_at', 'desc');
+            }
+            
             // Dapatkan aduan terbaru dengan paginasi
-            $aduan = $query->orderBy('created_at', 'desc')
-                          ->paginate($perPage)
-                          ->withQueryString();
+            $aduan = $query->paginate($perPage)->withQueryString();
         }
         
         return view('dashboard', compact('aduan'));
@@ -45,6 +63,32 @@ class DashboardController extends Controller
     {
         // Ambil token API menggunakan data user yang sedang login
         $token = $this->getApiToken();
+        
+        // Get sorting parameters
+        $sortBy = request('sort_by', 'created_at');
+        $sortDir = request('sort_dir', 'desc');
+        
+        // Convert Laravel field names to API field names
+        $sortByApiField = $sortBy;
+        $apiFieldMappings = [
+            'created_at' => '_created',
+            'updated_at' => '_updated',
+            'ticket_id' => 'ticket_num',
+            'kategori' => 'kategori',
+            'prioritas' => 'prioritas',
+            'nomor_surat' => 'no_permintaan',
+            'instansi' => 'instansi_id'
+        ];
+        
+        // Cek apakah field yang dipilih memiliki mapping ke API
+        if (isset($apiFieldMappings[$sortBy])) {
+            $sortByApiField = $apiFieldMappings[$sortBy];
+        } else {
+            // Jika tidak ada mapping, gunakan default
+            $sortByApiField = '_created';
+            $sortDir = 'desc';
+        }
+        
         // Jika token tidak berhasil didapatkan, kembalikan koleksi kosong
         if (!$token) {
             return new LengthAwarePaginator(
@@ -62,13 +106,19 @@ class DashboardController extends Controller
         
         try {
             // Kirim request ke endpoint /aduan dengan parameter yang sesuai
+            $requestParams = [
+                'signature' => $signature,
+                'page' => $currentPage,
+                'max_results' => $perPage,
+            ];
+            
+            // Add sorting parameters if API supports it
+            $requestParams['sort'] = $sortByApiField;
+            $requestParams['direction'] = $sortDir;
+            
             $response = Http::withToken($token)
                 ->timeout(60)
-                ->get('https://instansi.aduankonten.id/api/v01/aduan', [
-                    'signature' => $signature,
-                    'page' => $currentPage,
-                    'max_results' => $perPage,
-                ]);
+                ->get('https://instansi.aduankonten.id/api/v01/aduan', $requestParams);
             
             // Periksa apakah request berhasil
             if ($response->successful()) {
