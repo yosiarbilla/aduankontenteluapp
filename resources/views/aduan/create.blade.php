@@ -544,7 +544,7 @@
             <button type="button" id="tambahPasal" class="btn btn-add mt-2">
                                 <i class="fas fa-plus"></i> Tambah Pasal
                             </button>
-            <small class="text-muted d-block">Maksimal penambahan adalah 10 pasal</small>
+            <small class="text-muted d-block">Maksimal penambahan adalah 10 pasal (1 box untuk 1 pasal)</small>
             @error('pasal.*')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set prioritas based on kategori selection
     if (selectElement && prioritasElement && prioritasHidden) {
         selectElement.addEventListener('change', function() {
-            if (this.value === 'Terorisme/Radikalisme') {
+            if (this.value === 'Terorisme/Radikalisme' || this.value === 'Pornografi Anak') {
                 prioritasElement.value = 'Urgent';
                 prioritasHidden.value = 'Urgent';
             } else {
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Initialize prioritas based on initial kategori value
-        if (selectElement.value === 'Terorisme/Radikalisme') {
+        if (selectElement.value === 'Terorisme/Radikalisme' || selectElement.value === 'Pornografi Anak') {
             prioritasElement.value = 'Urgent';
             prioritasHidden.value = 'Urgent';
         } else if (selectElement.value) {
