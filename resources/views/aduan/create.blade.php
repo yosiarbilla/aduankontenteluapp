@@ -412,6 +412,7 @@
                                 <option value="Provokasi SARA">Provokasi SARA</option>
                                 <option value="Penyebaran berita bohong (hoax)">Penyebaran berita bohong (hoax)</option>
                                 <option value="Konten bermuatan asusila">Konten bermuatan asusila</option>
+                                <option value="Pornografi Anak">Pornografi Anak</option>
                                 <option value="Penghinaan, pencemaran nama baik">Penghinaan, pencemaran nama baik</option>
                                 <option value="Perjudian">Perjudian</option>
                                 <option value="Penipuan online">Penipuan online</option>
@@ -426,11 +427,12 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="prioritas" class="form-label">Prioritas</label>
-                        <select id="prioritas" name="prioritas" class="form-control form-control-select @error('prioritas') is-invalid @enderror">
-                            <option value="Normal" {{ old('prioritas') == 'Normal' ? 'selected' : '' }}>Normal</option>
-                            <option value="Urgent" {{ old('prioritas') == 'Urgent' ? 'selected' : '' }}>Urgent</option>
-                            <option value="High" {{ old('prioritas') == 'High' ? 'selected' : '' }}>High</option>
+                        <select id="prioritas" class="form-control form-control-select" disabled>
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="High">High</option>
                         </select>
+                        <input type="hidden" name="prioritas" id="prioritasHidden" value="Normal">
                         @error('prioritas')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -653,6 +655,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Setup for kategori dropdown
     const selectElement = document.querySelector('select[name="kategori"]');
+    const prioritasElement = document.getElementById('prioritas');
+    const prioritasHidden = document.getElementById('prioritasHidden');
+    
+    // Set prioritas based on kategori selection
+    if (selectElement && prioritasElement && prioritasHidden) {
+        selectElement.addEventListener('change', function() {
+            if (this.value === 'Terorisme/Radikalisme') {
+                prioritasElement.value = 'Urgent';
+                prioritasHidden.value = 'Urgent';
+            } else {
+                prioritasElement.value = 'Normal';
+                prioritasHidden.value = 'Normal';
+            }
+        });
+        
+        // Initialize prioritas based on initial kategori value
+        if (selectElement.value === 'Terorisme/Radikalisme') {
+            prioritasElement.value = 'Urgent';
+            prioritasHidden.value = 'Urgent';
+        } else if (selectElement.value) {
+            prioritasElement.value = 'Normal';
+            prioritasHidden.value = 'Normal';
+        }
+    }
+    
+    // Setup for kategori dropdown
     if (!selectElement) return;
     
     // Create custom dropdown elements
