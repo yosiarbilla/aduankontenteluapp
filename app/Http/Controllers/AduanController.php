@@ -14,153 +14,94 @@ class AduanController extends Controller
 {
     public function __construct()
     {
-        // Apply authentication middleware to all methods
         $this->middleware('auth');
 
-        // Apply role middleware to specific methods
         $this->middleware('role:admin,manager')->only(['approve']);
         $this->middleware('role:admin,manager,petugas')->only(['destroy']);
     }
     public function index()
     {
-        // $apiToken = session('api_token');
-        // $stringToHash = $apiToken . 'List';
-        // $signature = md5($stringToHash);
-
-        // try {
-        //     $response = Http::withToken($apiToken)
-        //         ->timeout(60)
-        //         ->get('https://instansi.aduankonten.id/api/v01/aduan', [
-        //             'signature' => $signature,
-        //             'page' => 1,
-        //             'max_results' => 10,
-        //         ]);
-
-        //     if ($response->successful()) {
-        //         $data = $response->json();
-        //         $aduan = $data['_items'] ?? [];
-        //         $kategoriMap = $this->fetchKategoriMap($apiToken);
-        //         $aduan = array_map(function ($item) use ($kategoriMap) {
-        //             return [
-        //                 'tiket_id' => $item['ticket_num'] ?? '-',
-        //                 'kategori' => $kategoriMap[$item['kategori']] ?? 'Tidak Diketahui',
-        //                 'prioritas' => $item['prioritas'] ?? 'Tidak Diketahui',
-        //                 'nomor_surat' => $item['nomor_surat'] ?? '-',
-        //                 'instansi' => $item['instansi_id'] ?? '-',
-        //                 'submit' => $item['_created'] ?? '-',
-        //                 'update' => $item['_updated'] ?? '-',
-        //             ];
-        //         }, $aduan);
-
-        //         return view('aduan.index', compact('aduan'));
-        //     }
-
-        //     return back()->withErrors(['error' => 'Gagal mengambil data aduan dari API.']);
-        // } catch (\Exception $e) {
-        //     return back()->withErrors(['error' => 'Terjadi kesalahan saat menghubungi API: ' . $e->getMessage()]);
-        // }
-
-        // Get per_page value from request, default to 10
         $perPage = request('per_page', 10);
-        
-        // Create base query depending on user role
+
         if (auth()->user()->role_id == 4) {
             $query = Aduan::where('user_id', auth()->id());
         } else {
-            // For other roles, show all aduan
             $query = Aduan::query();
         }
-        
-        // Apply filters if provided
+
         if (request()->filled('search')) {
             $search = request('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('ticket_id', 'like', "%{$search}%")
-                  ->orWhere('nomor_surat', 'like', "%{$search}%")
-                  ->orWhere('instansi', 'like', "%{$search}%")
-                  ->orWhere('kategori', 'like', "%{$search}%")
-                  ->orWhere('prioritas', 'like', "%{$search}%");
+                    ->orWhere('nomor_surat', 'like', "%{$search}%")
+                    ->orWhere('instansi', 'like', "%{$search}%")
+                    ->orWhere('kategori', 'like', "%{$search}%")
+                    ->orWhere('prioritas', 'like', "%{$search}%");
             });
         }
-        
+
         if (request()->filled('kategori')) {
             $query->where('kategori', request('kategori'));
         }
-        
+
         if (request()->filled('status')) {
             $query->where('status', request('status'));
         }
-        
+
         if (request()->filled('date_from')) {
             $query->whereDate('created_at', '>=', request('date_from'));
         }
-        
+
         if (request()->filled('date_to')) {
             $query->whereDate('created_at', '<=', request('date_to'));
         }
-        
-        // Apply sorting
+
         $sortBy = request('sort_by');
         $sortDir = request('sort_dir', 'desc');
-        
-        // Validate sortable columns to prevent SQL injection
-        $allowedSortColumns = [
-            'ticket_id', 'kategori', 'prioritas', 'nomor_surat', 
-            'instansi', 'created_at', 'updated_at'
-        ];
-        
-        // Only apply sorting if sort_by is explicitly set in the request
+
+        $allowedSortColumns = ['ticket_id', 'kategori', 'prioritas', 'nomor_surat', 'instansi', 'created_at', 'updated_at'];
+
         if ($sortBy && in_array($sortBy, $allowedSortColumns)) {
             $query->orderBy($sortBy, $sortDir);
         } else {
-            // Get data without explicit ordering
-            // We'll still use created_at desc for database efficiency,
-            // but we won't highlight it in the UI
             $query->orderBy('created_at', 'desc');
         }
-        
-        // Get paginated results
+
         $aduan = $query->paginate($perPage)->withQueryString();
-        
-        // Count statistics - dengan filter jika ada
+
         $statsQuery = Aduan::query();
-        
-        // Jika user reguler, hanya tampilkan aduan mereka sendiri
+
         if (auth()->user()->role_id == 4) {
             $statsQuery->where('user_id', auth()->id());
         }
-        
-        // Filter untuk statistik juga jika kata kunci pencarian diberikan
+
         if (request()->filled('search')) {
             $search = request('search');
-            $statsQuery->where(function($q) use ($search) {
+            $statsQuery->where(function ($q) use ($search) {
                 $q->where('ticket_id', 'like', "%{$search}%")
-                  ->orWhere('nomor_surat', 'like', "%{$search}%")
-                  ->orWhere('instansi', 'like', "%{$search}%")
-                  ->orWhere('kategori', 'like', "%{$search}%");
+                    ->orWhere('nomor_surat', 'like', "%{$search}%")
+                    ->orWhere('instansi', 'like', "%{$search}%")
+                    ->orWhere('kategori', 'like', "%{$search}%");
             });
         }
-        
-        // Jika ada filter kategori
+
         if (request()->filled('kategori')) {
             $statsQuery->where('kategori', request('kategori'));
         }
-        
-        // Jika ada filter rentang tanggal
+
         if (request()->filled('date_from')) {
             $statsQuery->whereDate('created_at', '>=', request('date_from'));
         }
-        
+
         if (request()->filled('date_to')) {
             $statsQuery->whereDate('created_at', '<=', request('date_to'));
         }
-        
-        // Count berdasarkan status
+
         $jumlahAktif = (clone $statsQuery)->where('status', 'active')->count();
         $jumlahSelesai = (clone $statsQuery)->where('status', 'selesai')->count();
         $jumlahDraft = (clone $statsQuery)->where('status', 'draft')->count();
         $jumlahPending = (clone $statsQuery)->where('status', 'pending')->count();
-    
+
         return view('aduan.index', compact('aduan', 'jumlahAktif', 'jumlahSelesai', 'jumlahDraft', 'jumlahPending'));
     }
 
@@ -184,7 +125,6 @@ class AduanController extends Controller
 
     public function store(Request $request)
     {
-        // Separate validation for non-file inputs
         $basicRules = [
             'kategori' => 'required',
             'prioritas' => 'required|in:Normal,Urgent,High',
@@ -202,7 +142,6 @@ class AduanController extends Controller
             'pasal2.*' => 'nullable|string',
         ];
 
-        // File validation rules
         $fileRules = [
             'surat_permintaan' => 'required|file|mimes:pdf|max:5120',
             'dokumen_pendukung.*' => 'nullable|file|mimes:jpg,jpeg,png,doc,pdf|max:5120',
@@ -211,14 +150,12 @@ class AduanController extends Controller
             'csv_file' => 'nullable|file|mimes:csv,txt|max:5120',
         ];
 
-        // Validate basic inputs first
         $validator = Validator::make($request->all(), $basicRules);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        // Now validate files with custom error messages
         $fileValidator = Validator::make($request->all(), $fileRules, [
             'surat_permintaan.mimes' => 'Format surat permintaan harus PDF.',
             'surat_permintaan.max' => 'Ukuran surat permintaan maksimal 5MB.',
@@ -233,19 +170,15 @@ class AduanController extends Controller
         ]);
 
         if ($fileValidator->fails()) {
-            // Return with specific file error messages and preserve input
             return back()->withErrors($fileValidator)->withInput();
         }
 
-        // Set default status
         $status = 'draft';
 
-        // Check which button was clicked
         if ($request->input('action') == 'pending') {
             $status = 'pending';
         }
 
-        // Create new Aduan instance
         $aduan = new Aduan();
         $aduan->kategori = $request->kategori;
         $aduan->prioritas = $request->prioritas;
@@ -253,10 +186,8 @@ class AduanController extends Controller
         $aduan->catatan_tambahan = $request->catatan_tambahan;
         $aduan->status = $status;
         $aduan->user_id = auth()->id();
-        // Prepare data array for URLs and platform details
         $urlData = [];
 
-        // First URL data
         if ($request->filled('platform') || $request->filled('url_link')) {
             $urlEntry = [
                 'platform' => $request->platform,
@@ -265,7 +196,6 @@ class AduanController extends Controller
                 'pasal' => $request->pasal ?? [],
             ];
 
-            // Handle screenshot upload for URL 1
             if ($request->hasFile('screenshot')) {
                 $urlEntry['screenshot'] = $request->file('screenshot')->store('screenshots', 'public');
             }
@@ -273,7 +203,6 @@ class AduanController extends Controller
             $urlData[] = $urlEntry;
         }
 
-        // Second URL data (if provided manually)
         if ($request->filled('platform2') || $request->filled('url_link2')) {
             $urlEntry = [
                 'platform' => $request->platform2,
@@ -282,7 +211,6 @@ class AduanController extends Controller
                 'pasal' => $request->pasal2 ?? [],
             ];
 
-            // Handle screenshot upload for URL 2
             if ($request->hasFile('screenshot2')) {
                 $urlEntry['screenshot'] = $request->file('screenshot2')->store('screenshots', 'public');
             }
@@ -290,21 +218,16 @@ class AduanController extends Controller
             $urlData[] = $urlEntry;
         }
 
-        // Handle CSV upload if provided
         if ($request->hasFile('csv_file')) {
             $path = $request->file('csv_file')->getRealPath();
             $csvData = array_map('str_getcsv', file($path));
 
-            // Assume first row is header, so start from second row
             $headers = array_shift($csvData);
 
             foreach ($csvData as $row) {
-                // Map CSV row to associative array using headers
                 $rowData = array_combine($headers, $row);
 
-                // Add to URL data if at least platform or URL is present
                 if (!empty($rowData['platform']) || !empty($rowData['url_link'])) {
-                    // Handle pasal as array from CSV (assuming comma-separated values in CSV)
                     $pasalData = !empty($rowData['pasal']) ? explode(',', $rowData['pasal']) : [];
 
                     $urlEntry = [
@@ -312,7 +235,6 @@ class AduanController extends Controller
                         'url_link' => $rowData['url_link'] ?? null,
                         'deskripsi_konten' => $rowData['deskripsi_konten'] ?? null,
                         'pasal' => $pasalData,
-                        // No screenshot for CSV entries
                     ];
 
                     $urlData[] = $urlEntry;
@@ -320,24 +242,20 @@ class AduanController extends Controller
             }
         }
 
-        // Save URL data as JSON
         $aduan->url_data = json_encode($urlData);
 
-        // Upload Surat Permintaan
         if ($request->hasFile('surat_permintaan')) {
             $aduan->surat_permintaan = $request->file('surat_permintaan')->store('surat_permintaan', 'public');
         }
 
-        // Upload Dokumen Pendukung
         if ($request->hasFile('dokumen_pendukung')) {
             $dokumen = [];
             foreach ($request->file('dokumen_pendukung') as $file) {
                 $dokumen[] = $file->store('dokumen_pendukung', 'public');
             }
-            $aduan->dokumen_pendukung = json_encode($dokumen); // Store as JSON string
+            $aduan->dokumen_pendukung = json_encode($dokumen);
         }
 
-        // Save to database
         $aduan->save();
 
         return redirect()->route('aduan.index')->with('success', 'Laporan berhasil disimpan.');
@@ -347,18 +265,18 @@ class AduanController extends Controller
     {
         // Set unlimited execution time untuk function ini
         ini_set('max_execution_time', 300); // 5 menit
-        ini_set('memory_limit', '512M');   // Tambah batas memori
-        
+        ini_set('memory_limit', '512M'); // Tambah batas memori
+
         $aduan = Aduan::with('user')->findOrFail($id);
 
         $pdf = PDF::setOptions([
-                'isRemoteEnabled' => true,
-                'isHtml5ParserEnabled' => true,
-                'isPhpEnabled' => true,
-                'defaultFont' => 'Arial',
-                'dpi' => 72,
-                'debugCss' => false,
-            ])
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'isPhpEnabled' => true,
+            'defaultFont' => 'Arial',
+            'dpi' => 72,
+            'debugCss' => false,
+        ])
             ->loadView('aduan.export-pdf', compact('aduan'))
             ->setPaper('a4', 'portrait'); // Changed to portrait for better readability
 
@@ -368,16 +286,8 @@ class AduanController extends Controller
     public function show($id)
     {
         $detailAduan = Aduan::findOrFail($id);
-
-        // // Cek kepemilikan data berdasarkan role
-        // if (auth()->user()->role_id != 1 && $detailAduan->user_id != auth()->id()) {
-        //     return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk melihat aduan ini.');
-        // }
-
-        // Decode url_data JSON menjadi array
         $urlData = json_decode($detailAduan->url_data, true);
 
-        // Kirim data ke view
         return view('aduan.detail', compact('detailAduan', 'urlData'));
     }
 
@@ -602,9 +512,9 @@ class AduanController extends Controller
             return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menyetujui aduan.');
         }
 
-        // Pastikan hanya aduan dengan status pending yang bisa disetujui
-        if ($aduan->status != 'pending') {
-            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status pending yang dapat disetujui!');
+        // Pastikan hanya aduan dengan status onreview yang bisa disetujui
+        if ($aduan->status != 'onreview') {
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status onreview yang dapat disetujui!');
         }
 
         // Update status menjadi active
@@ -621,5 +531,45 @@ class AduanController extends Controller
         $aduan->update(['status' => 'ditolak']);
 
         return redirect()->route('aduan.index')->with('success', 'Aduan berhasil ditolak');
+    }
+
+    // Method untuk menerima review
+    public function reviewAccept(Aduan $aduan)
+    {
+        // Hanya petugas yang bisa mereview aduan
+        if (auth()->user()->role_id != 3) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk mereview aduan.');
+        }
+
+        // Pastikan hanya aduan dengan status pending yang bisa direview
+        if ($aduan->status != 'pending') {
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status pending yang dapat direview!');
+        }
+
+        // Update status menjadi onreview
+        $aduan->status = 'onreview';
+        $aduan->save();
+
+        return redirect()->route('aduan.index')->with('success', 'Review diterima dan status diubah menjadi onreview.');
+    }
+
+    // Method untuk menolak review
+    public function reviewReject(Aduan $aduan)
+    {
+        // Hanya petugas yang bisa menolak review aduan
+        if (auth()->user()->role_id != 3) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menolak review aduan.');
+        }
+
+        // Pastikan hanya aduan dengan status pending yang bisa ditolak reviewnya
+        if ($aduan->status != 'pending') {
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status pending yang dapat ditolak!');
+        }
+
+        // Update status kembali menjadi draft
+        $aduan->status = 'draft';
+        $aduan->save();
+
+        return redirect()->route('aduan.index')->with('success', 'Review ditolak dan status dikembalikan menjadi draft.');
     }
 }

@@ -404,52 +404,71 @@
     </div>
 
     <!-- Tombol Aksi -->
-    <div class="btn-aksi">
-        <!-- Button Kembali untuk semua user -->
+<div class="btn-aksi">
+    <!-- Button Kembali untuk semua user -->
     
-        
-        <!-- Button Edit hanya muncul jika status draft dan user adalah pemilik aduan -->
-        @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
-            <a href="{{ route('aduan.edit', $detailAduan->id) }}" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Edit
-            </a>
-        @endif
-        
-        <!-- Button Kirim hanya muncul jika status draft dan user adalah pemilik aduan -->
-        @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
-            <form action="{{ route('aduan.kirim', $detailAduan->id) }}" method="POST" style="display: inline-block;">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-paper-plane"></i> Kirim
-                </button>
-            </form>
-        @endif
-        
-        <!-- Button Disetujui hanya muncul untuk manager dan jika status pending -->
-        @if($detailAduan->status == 'pending' && Auth::user()->role->id == 2)
-            <form action="{{ route('aduan.approve', $detailAduan->id) }}" method="POST" style="display: inline-block;">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-check-circle"></i> Disetujui
-                </button>
-            </form>
-            
-            <!-- Button Ditolak hanya muncul untuk manager dan jika status pending -->
-            <form action="{{ route('aduan.reject', $detailAduan->id) }}" method="POST" style="display: inline-block;">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-times-circle"></i> Ditolak
-                </button>
-            </form>
-        @endif
-        
-        <!-- Button Export PDF untuk semua user -->
-        <a href="{{ route('aduan.export-pdf', $detailAduan->id) }}" class="btn btn-info">
-            <i class="fas fa-file-pdf"></i> Export PDF
+    
+    <!-- Button Edit hanya muncul jika status draft dan user adalah pemilik aduan -->
+    @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
+        <a href="{{ route('aduan.edit', $detailAduan->id) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit
         </a>
-    </div>
+    @endif
+    
+    <!-- Button Kirim hanya muncul jika status draft dan user adalah pemilik aduan -->
+    @if($detailAduan->status == 'draft' && Auth::id() == $detailAduan->user_id)
+        <form action="{{ route('aduan.kirim', $detailAduan->id) }}" method="POST" style="display: inline-block;">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-paper-plane"></i> Kirim
+            </button>
+        </form>
+    @endif
+    
+    <!-- Button Review hanya muncul untuk petugas (role_id=3) dan jika status pending -->
+    @if($detailAduan->status == 'pending' && Auth::user()->role->id == 3)
+        <form action="{{ route('aduan.review-accept', $detailAduan->id) }}" method="POST" style="display: inline-block;">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check"></i> Review Diterima
+            </button>
+        </form>
+        
+        <form action="{{ route('aduan.review-reject', $detailAduan->id) }}" method="POST" style="display: inline-block;">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-times"></i> Review Ditolak
+            </button>
+        </form>
+    @endif
+    
+    <!-- Button Disetujui hanya muncul untuk manager dan jika status onreview -->
+    @if($detailAduan->status == 'onreview' && Auth::user()->role->id == 2)
+        <form action="{{ route('aduan.approve', $detailAduan->id) }}" method="POST" style="display: inline-block;">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check-circle"></i> Disetujui
+            </button>
+        </form>
+        
+        <!-- Button Ditolak hanya muncul untuk manager dan jika status onreview -->
+        <form action="{{ route('aduan.reject', $detailAduan->id) }}" method="POST" style="display: inline-block;">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-times-circle"></i> Ditolak
+            </button>
+        </form>
+    @endif
+    
+    <!-- Button Export PDF untuk semua user -->
+    <a href="{{ route('aduan.export-pdf', $detailAduan->id) }}" class="btn btn-info">
+        <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+</div>
 </div>
 @endsection
