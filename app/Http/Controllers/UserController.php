@@ -13,7 +13,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin'); // Hanya admin yang bisa akses
+        $this->middleware('role:admin');
     }
 
     public function index()
@@ -71,7 +71,6 @@ class UserController extends Controller
             'pangkat' => $request->pangkat,
         ];
 
-        // Update password hanya jika diisi
         if ($request->filled('password')) {
             $request->validate([
                 'password' => ['confirmed', Rules\Password::defaults()],
@@ -86,7 +85,6 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // Tidak bisa menghapus diri sendiri
         if ($user->id === auth()->id()) {
             return redirect()->route('users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }

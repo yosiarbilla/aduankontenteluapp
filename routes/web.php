@@ -32,39 +32,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('aduan')->group(function () {
         // Index route (daftar aduan)
         Route::get('/', [AduanController::class, 'index'])->name('aduan.index');
-        
+
         // PENTING: Tempatkan rute spesifik sebelum rute dengan parameter
         // Create dan Store route untuk semua role yang berhak membuat aduan
         Route::middleware(['role:user,admin,manager,petugas'])->group(function () {
             Route::get('/create', [AduanController::class, 'create'])->name('aduan.create');
             Route::post('/', [AduanController::class, 'store'])->name('aduan.store');
         });
-        
+
         // Export PDF route
         Route::get('/export-pdf/{id}', [AduanController::class, 'exportPdf'])->name('aduan.export-pdf');
-        
+
         // Routes untuk edit/update aduan
         Route::middleware(['role:user,admin,manager,petugas'])->group(function () {
             Route::get('/{aduan}/edit', [AduanController::class, 'edit'])->name('aduan.edit');
             Route::put('/{aduan}', [AduanController::class, 'update'])->name('aduan.update');
             Route::put('/{aduan}/kirim', [AduanController::class, 'kirim'])->name('aduan.kirim');
         });
-        
+
         // Routes untuk delete (hanya admin, manager, petugas)
         Route::middleware(['role:admin,manager,petugas'])->group(function () {
             Route::delete('/{aduan}', [AduanController::class, 'destroy'])->name('aduan.destroy');
         });
-        
+
         // Routes untuk approve/reject (hanya admin dan manager)
         Route::middleware(['role:admin,manager'])->group(function () {
             Route::put('/{aduan}/approve', [AduanController::class, 'approve'])->name('aduan.approve');
             Route::put('/{aduan}/reject', [AduanController::class, 'reject'])->name('aduan.reject');
         });
-        
+
+        // Routes untuk review (hanya petugas)
+        Route::middleware(['role:petugas'])->group(function () {
+            Route::put('/{aduan}/review-accept', [AduanController::class, 'reviewAccept'])->name('aduan.review-accept');
+            Route::put('/{aduan}/review-reject', [AduanController::class, 'reviewReject'])->name('aduan.review-reject');
+        });
+
         // Show route (PENTING: tempatkan setelah semua rute spesifik)
         Route::get('/{aduan}', [AduanController::class, 'show'])->name('aduan.show');
     });
-    
+
     // Routes khusus untuk admin
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
@@ -79,4 +85,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
