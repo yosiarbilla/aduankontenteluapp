@@ -172,9 +172,12 @@
             @csrf
             @method('patch')
             
+            <!-- Add hidden field for password update -->
+            <input type="hidden" name="password_update" id="password_update" value="false">
+            
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label for="name" class="form-label">Nama Lengkap</label>
+                    <label for="name" class="form-label">Nama Lengkap *</label>
                 </div>
                 <div class="col-md-9">
                     <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required oninvalid="this.setCustomValidity('Nama lengkap tidak boleh kosong')" oninput="setCustomValidity('')">
@@ -263,13 +266,53 @@
 
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label">Email *</label>
                 </div>
                 <div class="col-md-9">
                     <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required oninvalid="this.setCustomValidity('Email tidak boleh kosong dan harus dalam format yang benar')" oninput="setCustomValidity('')">
                     <div class="invalid-feedback">
                         Email tidak boleh kosong dan harus dalam format yang benar
                     </div>
+                </div>
+            </div>
+            
+            <!-- Password Fields -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="current_password" class="form-label">Password Saat Ini</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="password" class="form-control @error('current_password', 'updatePassword') is-invalid @enderror" id="current_password" name="current_password">
+                    @error('current_password', 'updatePassword')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <small class="text-muted">Biarkan kosong jika tidak ingin mengubah password</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="password" class="form-label">Password Baru</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="password" class="form-control @error('password', 'updatePassword') is-invalid @enderror" id="password" name="password">
+                    @error('password', 'updatePassword')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <small class="text-muted">Password minimal 8 karakter</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+                </div>
+                <div class="col-md-9">
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                 </div>
             </div>
             
@@ -383,6 +426,52 @@
                 console.log('Email tidak valid');
             }
             
+            // Check password fields
+            const currentPassword = document.getElementById('current_password');
+            const newPassword = document.getElementById('password');
+            const confirmPassword = document.getElementById('password_confirmation');
+            
+            // Validasi password (jika diisi)
+            if (currentPassword.value || newPassword.value || confirmPassword.value) {
+                // Jika ada salah satu field password yang diisi, maka semua field harus diisi
+                if (!currentPassword.value) {
+                    currentPassword.classList.add('is-invalid');
+                    isValid = false;
+                }
+                
+                if (!newPassword.value) {
+                    newPassword.classList.add('is-invalid');
+                    isValid = false;
+                }
+                
+                if (!confirmPassword.value) {
+                    confirmPassword.classList.add('is-invalid');
+                    isValid = false;
+                }
+                
+                // Validasi konfirmasi password
+                if (newPassword.value && confirmPassword.value && newPassword.value !== confirmPassword.value) {
+                    confirmPassword.classList.add('is-invalid');
+                    isValid = false;
+                    // Tambahkan pesan error
+                    let errorMsg = document.createElement('div');
+                    errorMsg.className = 'invalid-feedback';
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerHTML = 'Konfirmasi password tidak cocok';
+                    
+                    // Hapus pesan error sebelumnya jika ada
+                    const prevError = confirmPassword.nextElementSibling;
+                    if (prevError && prevError.className === 'invalid-feedback') {
+                        prevError.remove();
+                    }
+                    
+                    confirmPassword.parentNode.appendChild(errorMsg);
+                }
+                
+                // Set flag untuk update password
+                document.getElementById('password_update').value = 'true';
+            }
+            
             // Jika form valid, tampilkan modal konfirmasi
             if (isValid) {
                 console.log('Form valid, menampilkan modal');
@@ -395,6 +484,17 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
+
+        // Display password update status messages
+        @if(session('status') === 'password-updated')
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Password berhasil diperbarui',
+            timer: 3000,
+            showConfirmButton: false
+        });
+        @endif
 
         // Tutup modal saat klik tombol kembali
         btnKembali.onclick = function() {

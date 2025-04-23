@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -41,6 +43,14 @@ class ProfileController extends Controller
             'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
+        // Handle password update if needed
+        if ($request->input('password_update') === 'true') {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+                'password' => ['required', 'min:8', 'confirmed'],
+            ]);
+        }
+        
         $user = $request->user();
 
         // Isi data user
@@ -48,6 +58,14 @@ class ProfileController extends Controller
         $user->email = $validated['email'];
         $user->pangkat = $validated['pangkat'];
         $user->phone = $validated['phone'];
+        
+        // Update password if requested
+        if ($request->input('password_update') === 'true') {
+            $user->password = Hash::make($request->input('password'));
+            $passwordUpdated = true;
+        } else {
+            $passwordUpdated = false;
+        }
 
         // Upload foto jika ada
         if ($request->hasFile('foto')) {
@@ -73,6 +91,14 @@ class ProfileController extends Controller
         }
 
         $user->save();
+
+        if ($passwordUpdated) {
+            // Return with password updated status
+            return Redirect::route('profile.show')->with([
+                'success' => 'Profil dan password berhasil diperbarui',
+                'status' => 'password-updated'
+            ]);
+        }
 
         return Redirect::route('profile.show')->with('success', 'Profil berhasil diperbarui');
     }

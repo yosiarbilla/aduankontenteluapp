@@ -36,91 +36,88 @@ allDropdown.forEach(item=> {
 const toggleSidebar = document.querySelector('nav .toggle-sidebar');
 const allSideDivider = document.querySelectorAll('#sidebar .divider');
 
-if(sidebar.classList.contains('hide')) {
-    allSideDivider.forEach(item=> {
-        item.textContent = '-'
-    })
-    allDropdown.forEach(item=> {
-        const a = item.parentElement.querySelector('a:first-child');
-        a.classList.remove('active');
-        item.classList.remove('show');
-    })
-} else {
-    allSideDivider.forEach(item=> {
-        item.textContent = item.dataset.text;
-    })
-}
+// Ensure mobile sidebar works on page load
+document.addEventListener('DOMContentLoaded', function() {
+	console.log('DOM fully loaded');
+	
+	if(sidebar && toggleSidebar) {
+		console.log('Sidebar and toggle button found');
+		
+		// Make sure toggle button is properly initialized
+		toggleSidebar.addEventListener('click', function (e) {
+			e.preventDefault();
+			console.log('Toggle sidebar clicked');
+			
+			if(window.innerWidth <= 768) {
+				console.log('Mobile view detected, toggling sidebar class');
+				sidebar.classList.toggle('show'); // For mobile
+				
+				console.log('Sidebar has show class:', sidebar.classList.contains('show'));
+				
+				// Show or hide overlay when sidebar toggles on mobile
+				if(sidebarOverlay) {
+					if(sidebar.classList.contains('show')) {
+						sidebarOverlay.classList.remove('d-none');
+						setTimeout(() => {
+							sidebarOverlay.classList.add('show');
+						}, 10);
+						document.body.style.overflow = 'hidden'; // Prevent scrolling
+					} else {
+						sidebarOverlay.classList.remove('show');
+						setTimeout(() => {
+							sidebarOverlay.classList.add('d-none');
+						}, 300); // Match CSS transition time
+						document.body.style.overflow = ''; // Restore scrolling
+					}
+				}
+			} else {
+				sidebar.classList.toggle('hide'); // For desktop (original code)
+				
+				if(sidebar.classList.contains('hide')) {
+					allSideDivider.forEach(item=> {
+						item.textContent = '-'
+					})
+					
+					allDropdown.forEach(item=> {
+						const a = item.parentElement.querySelector('a:first-child');
+						a.classList.remove('active');
+						item.classList.remove('show');
+					})
+				} else {
+					allSideDivider.forEach(item=> {
+						item.textContent = item.dataset.text;
+					})
+				}
+			}
+		});
+	} else {
+		console.error('Sidebar or toggle button not found!');
+		console.log('Sidebar:', sidebar);
+		console.log('Toggle Button:', toggleSidebar);
+	}
+	
+	// Hide sidebar when overlay is clicked
+	if(sidebarOverlay) {
+		sidebarOverlay.addEventListener('click', function() {
+			if(sidebar) {
+				sidebar.classList.remove('show');
+			}
+			this.classList.remove('show');
+			setTimeout(() => {
+				this.classList.add('d-none');
+			}, 300);
+			document.body.style.overflow = ''; // Restore scrolling
+		});
+	}
+});
 
-toggleSidebar.addEventListener('click', function (e) {
-    console.log('Toggle sidebar clicked');
-    
-    if(window.innerWidth <= 768) {
-        e.preventDefault();
-        console.log('Mobile view detected, toggling sidebar class');
-        sidebar.classList.toggle('show'); // Untuk mobile
-        
-        console.log('Sidebar has show class:', sidebar.classList.contains('show'));
-        
-        // Tampilkan atau sembunyikan overlay saat sidebar toggle di mobile
-        if(sidebar.classList.contains('show')) {
-            if(sidebarOverlay) {
-                sidebarOverlay.classList.remove('d-none');
-                setTimeout(() => {
-                    sidebarOverlay.classList.add('show');
-                }, 10);
-                document.body.style.overflow = 'hidden'; // Mencegah scrolling
-            }
-        } else {
-            if(sidebarOverlay) {
-                sidebarOverlay.classList.remove('show');
-                setTimeout(() => {
-                    sidebarOverlay.classList.add('d-none');
-                }, 300); // Waktu sesuai dengan transisi CSS
-                document.body.style.overflow = ''; // Mengembalikan scrolling
-            }
-        }
-    } else {
-        sidebar.classList.toggle('hide'); // Untuk desktop (kode asli Anda)
-
-        if(sidebar.classList.contains('hide')) {
-            allSideDivider.forEach(item=> {
-                item.textContent = '-'
-            })
-
-            allDropdown.forEach(item=> {
-                const a = item.parentElement.querySelector('a:first-child');
-                a.classList.remove('active');
-                item.classList.remove('show');
-            })
-        } else {
-            allSideDivider.forEach(item=> {
-                item.textContent = item.dataset.text;
-            })
-        }
-    }
-})
-
-// Menyembunyikan sidebar ketika overlay diklik
-if(sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', function() {
-        if(sidebar) {
-            sidebar.classList.remove('show');
-        }
-        this.classList.remove('show');
-        setTimeout(() => {
-            this.classList.add('d-none');
-        }, 300);
-        document.body.style.overflow = ''; // Mengembalikan scrolling
-    });
-}
-
-// Handling resize pada window
+// Window resize handler
 window.addEventListener('resize', function() {
-    if(window.innerWidth > 768) {
-        sidebarOverlay.classList.remove('show');
-        sidebarOverlay.classList.add('d-none');
-        document.body.style.overflow = '';
-    }
+	if(window.innerWidth > 768 && sidebarOverlay) {
+		sidebarOverlay.classList.remove('show');
+		sidebarOverlay.classList.add('d-none');
+		document.body.style.overflow = '';
+	}
 });
 
 // PROFILE DROPDOWN

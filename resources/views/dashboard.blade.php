@@ -480,11 +480,11 @@
             <div class="modal-body">
                 <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
                 <ol>
-                    <li>Buka menu Aduan</li>
-                    <li>Pilih Buat Aduan</li>
-                    <li>Isi form sesuai informasi yang ada</li>
-                    <li>Pastikan seluruh informasi telah benar</li>
-                    <li>Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
+                    <li>1. Buka menu Aduan</li>
+                    <li>2. Pilih Buat Aduan</li>
+                    <li>3. Isi form sesuai informasi yang ada</li>
+                    <li>4. Pastikan seluruh informasi telah benar</li>
+                    <li>5. Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
                 </ol>
             </div>
             <div class="modal-footer">
@@ -617,11 +617,11 @@
                 modalBody.innerHTML = `
                     <img src="{{ asset('images/pelajariselengkapnya-tulis.jpeg') }}" alt="Tata Cara" class="img-fluid mb-3">
                     <ol class="ps-3">
-                        <li>Buka menu Aduan</li>
-                        <li>Pilih Buat Aduan</li>
-                        <li>Isi form sesuai informasi yang ada</li>
-                        <li>Pastikan seluruh informasi telah benar</li>
-                        <li>Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
+                        <li>1. Buka menu Aduan</li>
+                        <li>2. Pilih Buat Aduan</li>
+                        <li>3. Isi form sesuai informasi yang ada</li>
+                        <li>4. Pastikan seluruh informasi telah benar</li>
+                        <li>5. Pilih Simpan Draft untuk berhenti mengisi sementara, atau pilih Kirim untuk menyelesaikan pembuatan aduan</li>
                     </ol>
                 `;
             } else if (contentType === 'pemberitahuan') {
@@ -643,10 +643,10 @@
                     <p>TNI Siber adalah satuan yang bertugas untuk melindungi ruang siber Indonesia dari berbagai ancaman. Sebagai bagian dari pertahanan negara, TNI Siber memiliki peran strategis dalam mengamankan infrastruktur digital nasional.</p>
                     <p>Tugas utama TNI Siber meliputi:</p>
                     <ul class="ps-3">
-                        <li>Melakukan operasi siber untuk kepentingan pertahanan</li>
-                        <li>Melindungi infrastruktur kritis negara dari serangan siber</li>
-                        <li>Melakukan pengamanan terhadap sistem informasi strategis</li>
-                        <li>Memberikan dukungan teknis terhadap unit-unit TNI lainnya</li>
+                        <li>1. Melakukan operasi siber untuk kepentingan pertahanan</li>
+                        <li>2. Melindungi infrastruktur kritis negara dari serangan siber</li>
+                        <li>3. Melakukan pengamanan terhadap sistem informasi strategis</li>
+                        <li>4. Memberikan dukungan teknis terhadap unit-unit TNI lainnya</li>
                     </ul>
                 `;
             }

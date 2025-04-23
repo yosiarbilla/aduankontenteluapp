@@ -234,6 +234,166 @@
         border-radius: 4px;
         display: block;
     }
+    
+    /* Custom styles for dropdown search */
+    .kategori-search {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        margin: 8px;
+        width: calc(100% - 16px);
+    }
+    
+    .kategori-search:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+        outline: none;
+    }
+    
+    .dropdown-item-highlight {
+        background-color: #e9ecef;
+    }
+    
+    .dropdown-menu {
+        max-height: 350px;
+        overflow-y: auto;
+        width: 100%;
+    }
+    
+    .dropdown-options {
+        margin-top: 8px;
+    }
+    
+    .dropdown-item {
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .no-results {
+        padding: 8px 16px;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .select-dropdown {
+        position: relative;
+    }
+    
+    .select-dropdown .dropdown-menu {
+        margin-top: 0;
+        width: 100%;
+        border-radius: 0 0 5px 5px;
+    }
+
+    .custom-dropdown {
+        position: relative;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .custom-select {
+        display: block;
+        width: 100%;
+        height: calc(2.25rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .custom-select:after {
+        content: '';
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #495057;
+    }
+
+    .custom-select.selected {
+        color: #212529;
+        border-color: #80bdff;
+    }
+
+    .custom-select:hover {
+        border-color: #80bdff;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        width: 100%;
+        padding: 0.5rem 0;
+        margin: 0.125rem 0 0;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 0.25rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .kategori-search {
+        width: calc(100% - 20px);
+        margin: 0 10px 10px;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+
+    .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 1.5rem;
+        clear: both;
+        font-weight: 400;
+        color: #212529;
+        text-align: inherit;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover, .dropdown-item:focus {
+        color: #16181b;
+        text-decoration: none;
+        background-color: #f8f9fa;
+    }
+
+    .no-results {
+        padding: 0.25rem 1.5rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    @media (max-width: 576px) {
+        .kategori-search {
+            font-size: 0.875rem;
+        }
+        
+        .dropdown-item {
+            padding: 0.375rem 1rem;
+            font-size: 0.875rem;
+        }
+    }
 </style>
 
 <div class="content">
@@ -263,12 +423,29 @@
                 <div class="row row-gap">
                     <div class="col-12 col-md-6 mb-3 mb-md-0">
                         <label for="kategori" class="form-label">Kategori</label>
-                        <select id="kategori" name="kategori" class="form-control form-control-select @error('kategori') is-invalid @enderror" required>
-                            <option value="">Pilih Kategori</option>
-                            <option value="Konten Negatif" {{ old('kategori', $aduan->kategori) == 'Konten Negatif' ? 'selected' : '' }}>Konten Negatif</option>
-                            <option value="Penipuan" {{ old('kategori', $aduan->kategori) == 'Penipuan' ? 'selected' : '' }}>Penipuan</option>
-                            <option value="Terorisme" {{ old('kategori', $aduan->kategori) == 'Terorisme' ? 'selected' : '' }}>Terorisme</option>
-                        </select>
+                        <div class="select-dropdown">
+                            <select id="kategori" name="kategori" class="form-control form-control-select @error('kategori') is-invalid @enderror" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="Korupsi" {{ old('kategori', $aduan->kategori) == 'Korupsi' ? 'selected' : '' }}>Korupsi</option>
+                                <option value="Kolusi" {{ old('kategori', $aduan->kategori) == 'Kolusi' ? 'selected' : '' }}>Kolusi</option>
+                                <option value="Nepotisme" {{ old('kategori', $aduan->kategori) == 'Nepotisme' ? 'selected' : '' }}>Nepotisme</option>
+                                <option value="Pungutan Liar" {{ old('kategori', $aduan->kategori) == 'Pungutan Liar' ? 'selected' : '' }}>Pungutan Liar</option>
+                                <option value="Pencucian Uang" {{ old('kategori', $aduan->kategori) == 'Pencucian Uang' ? 'selected' : '' }}>Pencucian Uang</option>
+                                <option value="Benturan Kepentingan/Gratifikasi" {{ old('kategori', $aduan->kategori) == 'Benturan Kepentingan/Gratifikasi' ? 'selected' : '' }}>Benturan Kepentingan/Gratifikasi</option>
+                                <option value="Pelanggaran SOP/Disiplin" {{ old('kategori', $aduan->kategori) == 'Pelanggaran SOP/Disiplin' ? 'selected' : '' }}>Pelanggaran SOP/Disiplin</option>
+                                <option value="Penyalahgunaan Wewenang" {{ old('kategori', $aduan->kategori) == 'Penyalahgunaan Wewenang' ? 'selected' : '' }}>Penyalahgunaan Wewenang</option>
+                                <option value="Pelanggaran Kode Etik/Perilaku" {{ old('kategori', $aduan->kategori) == 'Pelanggaran Kode Etik/Perilaku' ? 'selected' : '' }}>Pelanggaran Kode Etik/Perilaku</option>
+                                <option value="Pelayanan Publik" {{ old('kategori', $aduan->kategori) == 'Pelayanan Publik' ? 'selected' : '' }}>Pelayanan Publik</option>
+                                <option value="Pengadaan Barang/Jasa" {{ old('kategori', $aduan->kategori) == 'Pengadaan Barang/Jasa' ? 'selected' : '' }}>Pengadaan Barang/Jasa</option>
+                                <option value="Pelanggaran Hak atas Kekayaan Intelektual (HKI)" {{ old('kategori', $aduan->kategori) == 'Pelanggaran Hak atas Kekayaan Intelektual (HKI)' ? 'selected' : '' }}>Pelanggaran Hak atas Kekayaan Intelektual (HKI)</option>
+                                <option value="Penyalahgunaan Narkotika dan Obat Terlarang" {{ old('kategori', $aduan->kategori) == 'Penyalahgunaan Narkotika dan Obat Terlarang' ? 'selected' : '' }}>Penyalahgunaan Narkotika dan Obat Terlarang</option>
+                                <option value="Pelanggaran Hak Asasi Manusia (HAM)" {{ old('kategori', $aduan->kategori) == 'Pelanggaran Hak Asasi Manusia (HAM)' ? 'selected' : '' }}>Pelanggaran Hak Asasi Manusia (HAM)</option>
+                                <option value="Perusakan Lingkungan" {{ old('kategori', $aduan->kategori) == 'Perusakan Lingkungan' ? 'selected' : '' }}>Perusakan Lingkungan</option>
+                                <option value="Kekerasan, Pelecehan, dan Diskriminasi" {{ old('kategori', $aduan->kategori) == 'Kekerasan, Pelecehan, dan Diskriminasi' ? 'selected' : '' }}>Kekerasan, Pelecehan, dan Diskriminasi</option>
+                                <option value="Terorisme/Radikalisme" {{ old('kategori', $aduan->kategori) == 'Terorisme/Radikalisme' ? 'selected' : '' }}>Terorisme/Radikalisme</option>
+                                <option value="Lainnya" {{ old('kategori', $aduan->kategori) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
+                        </div>
                         @error('kategori')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -450,7 +627,125 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kategori dropdown with search
+        const selectElement = document.querySelector('select[name="kategori"]');
+        const originalOptions = Array.from(selectElement.options);
+        
+        // Create custom dropdown structure
+        const customDropdown = document.createElement('div');
+        customDropdown.className = 'custom-dropdown';
+        
+        const customSelect = document.createElement('div');
+        customSelect.className = 'custom-select';
+        customSelect.textContent = selectElement.options[selectElement.selectedIndex].text;
+        if (selectElement.value) {
+            customSelect.classList.add('selected');
+        }
+        
+        const dropdownMenu = document.createElement('div');
+        dropdownMenu.className = 'dropdown-menu';
+        
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'kategori-search';
+        searchInput.placeholder = 'Cari kategori...';
+        dropdownMenu.appendChild(searchInput);
+        
+        // Hide original select
+        selectElement.style.display = 'none';
+        
+        // Insert custom dropdown
+        selectElement.parentNode.insertBefore(customDropdown, selectElement);
+        customDropdown.appendChild(customSelect);
+        customDropdown.appendChild(dropdownMenu);
+        customDropdown.appendChild(selectElement);
+        
+        // Toggle dropdown
+        let isOpen = false;
+        
+        customSelect.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isOpen = !isOpen;
+            
+            if (isOpen) {
+                dropdownMenu.style.display = 'block';
+                searchInput.focus();
+                populateOptions('');
+            } else {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            if (isOpen) {
+                isOpen = false;
+                dropdownMenu.style.display = 'none';
+            }
+        });
+        
+        // Prevent dropdown from closing when clicking inside
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            populateOptions(this.value.toLowerCase());
+        });
+        
+        // Populate dropdown options based on search
+        function populateOptions(searchTerm) {
+            // Clear previous options
+            const existingOptions = dropdownMenu.querySelectorAll('.dropdown-item, .no-results');
+            existingOptions.forEach(option => option.remove());
+            
+            // Filter options based on search term
+            const filteredOptions = originalOptions.filter(option => 
+                option.text.toLowerCase().includes(searchTerm)
+            );
+            
+            // Display filtered options or "no results" message
+            if (filteredOptions.length > 0) {
+                filteredOptions.forEach(option => {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item';
+                    item.textContent = option.text;
+                    item.dataset.value = option.value;
+                    
+                    // Highlight if selected
+                    if (option.value === selectElement.value) {
+                        item.style.backgroundColor = '#e9f5ff';
+                    }
+                    
+                    item.addEventListener('click', function() {
+                        // Update original select
+                        selectElement.value = this.dataset.value;
+                        
+                        // Update custom select text
+                        customSelect.textContent = this.textContent;
+                        customSelect.classList.add('selected');
+                        
+                        // Close dropdown
+                        isOpen = false;
+                        dropdownMenu.style.display = 'none';
+                        
+                        // Trigger change event on original select
+                        const event = new Event('change', { bubbles: true });
+                        selectElement.dispatchEvent(event);
+                    });
+                    
+                    dropdownMenu.appendChild(item);
+                });
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'Tidak ada hasil yang cocok';
+                dropdownMenu.appendChild(noResults);
+            }
+        }
+
         // Handle form select styling
         const selectElements = document.querySelectorAll('.form-control-select');
         

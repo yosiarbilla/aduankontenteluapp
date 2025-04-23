@@ -58,6 +58,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    <h6 class="mb-3">Semua Pengguna</h6>
                     <!-- Tabel User -->
                     <div class="table-responsive">
                         <table class="table table-borderless" id="userTable">
@@ -101,6 +102,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div class="d-flex justify-content-center mt-4">{{ $users->links() }}</div>
                     </div>
                 </div>
             </div>

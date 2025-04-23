@@ -5,8 +5,12 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	
-	
+}
+
+html, body {
+	width: 100%;
+	max-width: 100%;
+	/* Instead of overflow-x: hidden, fix the actual cause */
 }
 
 :root {
@@ -22,15 +26,9 @@
 	--red: #FC3B56;
 }
 
-html {
-	overflow-x: hidden;
-}
-
 body {
-
-	overflow-x: hidden;
+	/* overflow-x hidden was removed from here */
 	background: var(--grey) !important;
-
 }
 
 a {
@@ -40,12 +38,6 @@ a {
 li {
 	list-style: none;
 }
-
-
-
-
-
-
 
 /* SIDEBAR */
 #sidebar {
@@ -60,7 +52,7 @@ li {
 	scrollbar-width: none;
 	transition: all .3s ease;
 	z-index: 200; /* sidebar di bawah nav (nanti nav z-index > 200) */
-  }
+}
 #sidebar.hide {
 	max-width: 60px;
 }
@@ -90,7 +82,7 @@ li {
 	justify-content: center;
 	align-items: center;
 	margin-right: 10px;
-  }
+}
 #sidebar .icon-right {
 	margin-left: auto;
 	transition: all .3s ease;
@@ -152,16 +144,16 @@ li {
 /* CSS untuk menangani tampilan saat sidebar diciutkan */
 #sidebar.hide .menu-text {
 	display: none;
-  }
-  
-  #sidebar.hide .side-menu li a {
+}
+
+#sidebar.hide .side-menu li a {
 	justify-content: center;
 	padding: 12px 0;
-  }
-  
-  #sidebar.hide .icon {
+}
+
+#sidebar.hide .icon {
 	margin-right: 0;
-  }
+}
 #sidebar .side-dropdown {
 	padding-left: 54px;
 	max-height: 0;
@@ -216,16 +208,15 @@ li {
 
 /* SIDEBAR */
 
-
-
-
-
 /* CONTENT */
 #content {
 	position: relative;
 	width: calc(100% - 260px);
 	left: 260px;
 	transition: all .3s ease;
+	/* Fix width calculations to prevent overflow */
+	max-width: 100%;
+	box-sizing: border-box;
 }
 #sidebar.hide + #content {
 	width: calc(100% - 60px);
@@ -240,14 +231,16 @@ nav {
 	align-items: center;
 	grid-gap: 28px;
 	position: sticky !important;
-	left: 0;z-index: 200;
-
+	top: 0; /* Make navbar stick to top */
+	left: 0;
+	width: 100%;
+	z-index: 1050; /* Higher z-index to ensure it's above everything */
+	box-sizing: border-box; /* Ensure padding is included in width */
 }
 nav .toggle-sidebar {
 	font-size: 18px;
 	cursor: pointer;
 	color: #11A90C;
-	
 }
 nav form {
 	max-width: 400px;
@@ -347,12 +340,11 @@ nav .profile .profile-link a:hover {
 }
 /* NAVBAR */
 
-
-
 /* MAIN */
 main {
 	width: 100%;
 	padding: 24px 20px 20px 20px;
+	box-sizing: border-box; /* Ensure padding is included in width */
 }
 main .title {
 	font-size: 28px;
@@ -603,66 +595,235 @@ main .btn-send:hover {
 /* MAIN */
 /* CONTENT */
 
-
-
-
-
-
+/* For mobile devices */
 @media screen and (max-width: 768px) {
-
-	/* Navbar di atas sidebar (z-index > 200) */
+	/* Fix navbar positioning */
 	nav {
-	  position: sticky; /* atau fixed, sesuai kebutuhan */
-	  top: 0;
-	  left: 0;
-	  width: 100% !important;
-	  margin: 0 !important;
-	  padding: 0 20px;
-	  display: flex;       /* Susun isi nav secara horizontal */
-	  align-items: center; /* Vertical center */
-	  justify-content: space-between; 
-	  /* Atur background nav jika perlu */
-	  /* background: #595442; */
-	  z-index: 9999;
+		position: sticky !important;
+		top: 0;
+		left: 0;
+		width: 100% !important;
+		margin: 0 !important;
+		padding: 0 15px; /* Reduce padding slightly */
+		display: flex;
+		align-items: center;
+		justify-content: space-between; 
+		z-index: 1050;
 	}
   
-	/* Munculkan tombol toggle di mobile */
-	nav .toggle-sidebar {
-	    display: block !important;
-    color: #11A90C !important;
-    cursor: pointer;
-    font-size: 24px; /* Make it more visible */
-    margin-right: 15px; /* Add some spacing */
-    z-index: 9999 !important;
-  }
-  
-	/* Jika ingin sembunyikan link navbar & divider di mobile */
-	nav .nav-link,
-	nav .divider {
-	  display: none;
-	}
+	/* Make sure sidebar works properly */
 	#sidebar {
+		position: fixed;
 		left: -100%; /* Start hidden */
-		transition: 0.3s;
-	  }
+		width: 260px;
+		max-width: 80%; /* Use percentage instead of vw */
+		height: 100%;
+		z-index: 1040;
+		transition: all 0.3s ease;
+	}
 	
-	  #sidebar.show {
+	#sidebar.show {
 		left: 0; /* Show sidebar */
-	  }
-  
-	/* Sidebar “tersembunyi” jika ada class .hide */
-	#sidebar.hide {
-	  max-width: 0px;
 	}
   
-	/* Konten melebar penuh di mobile, di bawah nav */
+	/* Content fills full width on mobile */
 	#content {
-	  position: relative;
-	  left: 0 !important;
-	  width: 100% !important;
-	  margin: 0 !important;
-	  transition: all .3s ease;
-	  z-index: 1; /* Lebih rendah dari nav (9999) dan sidebar (200) */
+		position: relative;
+		left: 0 !important;
+		width: 100% !important;
+		margin: 0 !important;
+		max-width: 100%;
+		transition: all .3s ease;
+		z-index: 1; /* Lower z-index to stay below nav and sidebar */
 	}
-  }
+	
+	/* Make sure main content fills full width */
+	main {
+		width: 100%;
+		max-width: 100%;
+		padding: 15px; /* Reduced padding for mobile */
+		box-sizing: border-box;
+	}
+	
+	/* Responsive cards and other content */
+	main .info-data {
+		grid-template-columns: 1fr; /* Single column on mobile */
+		gap: 15px;
+	}
+	
+	/* Ensure images don't overflow */
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	
+	/* Make tables responsive with a container rather than overflow */
+	.table-responsive {
+		width: 100%;
+		display: block;
+	}
+	
+	/* Make sure all containers respect their bounds */
+	.container, .container-fluid, .row, [class*="col-"] {
+		width: 100%;
+		max-width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+		box-sizing: border-box;
+	}
+}
+
+/* Aduan page specific styles */
+.stats-container {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+}
+
+.stats-container [class*="col-"] {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-bottom: 15px;
+}
+
+.card-stats {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.table-responsive {
+	min-width: 100%;
+	border: 0;
+}
+
+.action-buttons {
+	white-space: nowrap;
+}
+
+.search-form-row {
+	margin-right: -15px;
+	margin-left: -15px;
+}
+
+.search-form-row [class*="col-"] {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+/* Improved mobile styles */
+@media screen and (max-width: 768px) {
+	/* Fix navbar positioning */
+	nav {
+		position: sticky !important;
+		top: 0;
+		left: 0;
+		width: 100% !important;
+		max-width: 100%;
+		margin: 0 !important;
+		padding: 0 15px; /* Reduce padding slightly */
+		display: flex;
+		align-items: center;
+		justify-content: space-between; 
+		z-index: 1050;
+	}
+  
+	/* Make sure sidebar works properly */
+	#sidebar {
+		position: fixed;
+		left: -100%; /* Start hidden */
+		width: 260px;
+		max-width: 80%; /* Use percentage instead of vw */
+		height: 100%;
+		z-index: 1040;
+		transition: all 0.3s ease;
+	}
+	
+	#sidebar.show {
+		left: 0; /* Show sidebar */
+	}
+  
+	/* Content fills full width on mobile */
+	#content {
+		position: relative;
+		left: 0 !important;
+		width: 100% !important;
+		margin: 0 !important;
+		max-width: 100%;
+		transition: all .3s ease;
+		z-index: 1; /* Lower z-index to stay below nav and sidebar */
+	}
+	
+	/* Make sure main content fills full width */
+	main {
+		width: 100%;
+		max-width: 100%;
+		padding: 15px; /* Reduced padding for mobile */
+		box-sizing: border-box;
+	}
+	
+	/* Aduan page specific mobile styles */
+	.stats-container .col-md-3 {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+	
+	.card-stats {
+		margin-bottom: 15px;
+	}
+	
+	.table-responsive {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		width: 100%;
+		max-width: 100%;
+	}
+	
+	.action-buttons .btn {
+		margin-bottom: 5px;
+		display: block;
+		width: 100%;
+	}
+	
+	.button-container {
+		flex-direction: column;
+		width: 100%;
+	}
+	
+	.button-container button {
+		width: 100% !important;
+		margin-right: 0 !important;
+		margin-bottom: 10px;
+	}
+	
+	.search-form-row {
+		margin-right: -5px;
+		margin-left: -5px;
+	}
+	
+	.search-form-row [class*="col-"] {
+		padding-right: 5px;
+		padding-left: 5px;
+		margin-bottom: 10px;
+	}
+	
+	/* Fix pagination on mobile */
+	.pagination-container {
+		flex-direction: column;
+		align-items: center;
+	}
+	
+	.pagination-container > div {
+		width: 100%;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+	
+	.pagination {
+		justify-content: center;
+	}
+}
 

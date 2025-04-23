@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends ('layouts.app')
 
 @section('isi')
 
@@ -120,6 +120,7 @@
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        margin-bottom: 15px;  /* Add spacing between cards */
     }
 
     .card-stats:hover {
@@ -282,7 +283,152 @@
     .text-muted th {
         color: initial;
     }
-    </style>
+    
+    .select-dropdown {
+        position: relative;
+    }
+    
+    .kategori-search {
+        position: relative;
+        margin-top: 5px;
+        z-index: 1001;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        width: 100%;
+        max-height: 250px;
+        overflow-y: auto;
+        background-color: white;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+        padding: 5px 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .dropdown-options {
+        max-height: 240px;
+        overflow-y: auto;
+    }
+    
+    .dropdown-item {
+        padding: 8px 15px;
+        cursor: pointer;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .no-results {
+        padding: 10px 15px;
+        color: #6c757d;
+        font-style: italic;
+        text-align: center;
+    }
+
+    /* Add padding to address the red marks along the sides */
+    .container-fluid.mt-6 {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    /* Responsive fixes for Semua Aduan card */
+    @media (max-width: 768px) {
+        .container-fluid.mt-6 {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        
+        .col-12 .card .card-body {
+            padding: 15px 10px;
+        }
+        
+        .row.mb-3 {
+            flex-direction: column;
+        }
+        
+        .row.mb-3 .col {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        /* Improve form controls on mobile */
+        .form-control, .form-select {
+            font-size: 16px; /* Prevent iOS zoom on focus */
+            height: 38px;
+        }
+        
+        /* Ensure dropdown icon remains visible */
+        .position-relative .position-absolute {
+            top: 9px !important;
+        }
+        
+        /* Adjust button spacing */
+        .d-flex.justify-content-end.mb-4 {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        
+        .d-flex.justify-content-end.mb-4 button {
+            width: 100% !important;
+            margin-right: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        
+        .table-responsive {
+            border: 0;
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .table th, .table td {
+            white-space: nowrap;
+        }
+        
+        .col-12.d-flex.justify-content-between.align-items-center.mb-3 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+        
+        .col-12.d-flex.justify-content-between.align-items-center.mb-3 h5 {
+            margin-bottom: 5px;
+        }
+        
+        /* Improved pagination container for mobile */
+        .pagination-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .pagination-container > div {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .pagination {
+            justify-content: center;
+        }
+        
+        .text-muted {
+            text-align: center;
+            width: 100%;
+        }
+        
+        .form-select.form-select-sm {
+            margin: 0 auto;
+        }
+    }
+</style>
 
     @if(Auth::user()->role_id != null)
     <div class="container-fluid mt-6">
@@ -294,10 +440,10 @@
         @endif
 
 
-        <!-- Statistik Aduan -->
+
         <h5 style="margin-bottom: 20px;">Statistik Aduan</h5>
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">  <!-- Add margin-bottom to columns -->
             <a href="{{ route('aduan.index', ['status' => 'pending']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -308,7 +454,7 @@
                 </div>
             </a>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">  <!-- Add margin-bottom to columns -->
             <a href="{{ route('aduan.index', ['status' => 'active']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -319,7 +465,7 @@
                 </div>
             </a>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">  <!-- Add margin-bottom to columns -->
             <a href="{{ route('aduan.index', ['status' => 'selesai']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -330,7 +476,7 @@
                 </div>
             </a>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">  <!-- Add margin-bottom to columns -->
             <a href="{{ route('aduan.index', ['status' => 'draft']) }}" class="text-decoration-none">
                 <div class="card text-center card-stats">
                     <div class="card-body">
@@ -340,13 +486,12 @@
                     </div>
                 </div>
             </a>
-        </div>
+            </div>
         </div>
 
         <!-- Semua Aduan -->
         <div class="row">
             <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-                <!-- Judul disesuaikan berdasarkan role -->
                 @if (Auth::user()->role_id == 4)
                     <h5>Aduan Saya</h5>
                 @else
@@ -415,7 +560,6 @@
                         <input type="hidden" name="sort_by" id="sort_by" value="{{ request('sort_by') }}">
                         <input type="hidden" name="sort_dir" id="sort_dir" value="{{ request('sort_dir', 'desc') }}">
                     </form>
-
                         <hr>
 
                         <!-- Tabel Aduan -->
