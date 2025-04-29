@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Auth;
 
 class AduanController extends Controller
 {
@@ -293,7 +294,6 @@ class AduanController extends Controller
 
     public function edit(Aduan $aduan)
     {
-        // Cek kepemilikan data dan status
         if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
             return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk mengedit aduan ini.');
         }
@@ -302,10 +302,8 @@ class AduanController extends Controller
             return redirect()->route('aduan.index')->with('error', 'Data tidak bisa diedit!');
         }
 
-        // Decode url_data JSON menjadi array
         $urlData = json_decode($aduan->url_data, true);
 
-        // Kirim data ke view
         return view('aduan.edit', compact('aduan', 'urlData'));
     }
 
@@ -313,36 +311,28 @@ class AduanController extends Controller
     {
         $aduan = Aduan::findOrFail($id);
 
-        // Pastikan hanya aduan dengan status draft yang bisa dikirim
         if ($aduan->status != 'draft') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat dikirim!');
         }
 
-        // Update status menjadi pending
         $aduan->status = 'pending';
         $aduan->save();
-
-        // Logika tambahan jika diperlukan (notifikasi, log, dll)
 
         return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dikirim dan status diubah menjadi pending.');
     }
 
-    // Tambahkan juga method update jika belum ada
     public function update(Request $request, Aduan $aduan)
     {
-        // Log the entire request data for debugging
         Log::info('Request data:', $request->all());
 
         if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
             return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk mengupdate aduan ini.');
         }
 
-        // Verify the aduan status first
         if ($aduan->status != 'draft') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat diedit!');
         }
 
-        // Validation rules
         $basicRules = [
             'kategori' => 'required',
             'prioritas' => 'required|in:Normal,Urgent,High',
@@ -350,7 +340,6 @@ class AduanController extends Controller
             'catatan_tambahan' => 'nullable',
         ];
 
-        // File validation rules
         $fileRules = [];
         if ($request->hasFile('surat_permintaan')) {
             $fileRules['surat_permintaan'] = 'file|mimes:pdf|max:5120';
@@ -362,7 +351,6 @@ class AduanController extends Controller
             $fileRules['screenshot.*'] = 'file|mimes:jpg,jpeg,png,pdf|max:5120';
         }
 
-        // Combine validation rules
         $rules = array_merge($basicRules, $fileRules);
 
         $validator = Validator::make($request->all(), $rules);
@@ -370,23 +358,19 @@ class AduanController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Update basic fields
         $aduan->kategori = $request->kategori;
         $aduan->prioritas = $request->prioritas;
         $aduan->nomor_surat = $request->nomor_surat;
         $aduan->catatan_tambahan = $request->catatan_tambahan;
 
-        // Prepare URL data
         $urlData = [];
 
-        // Handle platform data - ensure we're properly processing arrays
         if ($request->has('platform') && $request->has('url_link')) {
             $platforms = $request->platform;
             $urlLinks = $request->url_link;
             $deskripsis = $request->deskripsi_konten;
             $screenshots = $request->file('screenshot');
 
-            // Make sure we're dealing with arrays
             if (!is_array($platforms)) {
                 $platforms = [$platforms];
             }
@@ -397,7 +381,6 @@ class AduanController extends Controller
                 $deskripsis = [$deskripsis];
             }
 
-            // Process each platform entry
             for ($i = 0; $i < count($platforms); $i++) {
                 if (empty($platforms[$i]) && empty($urlLinks[$i])) {
                     continue;
@@ -410,11 +393,9 @@ class AduanController extends Controller
                     'pasal' => isset($request->pasal[$i]) ? $request->pasal[$i] : [],
                 ];
 
-                // Handle screenshot upload
                 if ($screenshots && isset($screenshots[$i])) {
                     $urlEntry['screenshot'] = $screenshots[$i]->store('screenshots', 'public');
                 } elseif (isset($urlData[$i]['screenshot'])) {
-                    // Keep existing screenshot if available
                     $oldUrlData = json_decode($aduan->url_data, true);
                     if (isset($oldUrlData[$i]['screenshot'])) {
                         $urlEntry['screenshot'] = $oldUrlData[$i]['screenshot'];
@@ -425,21 +406,16 @@ class AduanController extends Controller
             }
         }
 
-        // Update URL data
         $aduan->url_data = json_encode($urlData);
 
-        // Handle file uploads
         if ($request->hasFile('surat_permintaan')) {
-            // Delete old file if exists
             if ($aduan->surat_permintaan) {
                 Storage::disk('public')->delete($aduan->surat_permintaan);
             }
             $aduan->surat_permintaan = $request->file('surat_permintaan')->store('surat_permintaan', 'public');
         }
 
-        // Handle document uploads
         if ($request->hasFile('dokumen_pendukung')) {
-            // Delete old documents
             if (!empty($aduan->dokumen_pendukung)) {
                 $oldDocs = is_string($aduan->dokumen_pendukung) ? json_decode($aduan->dokumen_pendukung, true) : $aduan->dokumen_pendukung;
 
@@ -450,7 +426,6 @@ class AduanController extends Controller
                 }
             }
 
-            // Store new documents
             $dokumen = [];
             foreach ($request->file('dokumen_pendukung') as $file) {
                 $dokumen[] = $file->store('dokumen_pendukung', 'public');
@@ -458,10 +433,8 @@ class AduanController extends Controller
             $aduan->dokumen_pendukung = json_encode($dokumen);
         }
 
-        // Set status based on clicked button
         $aduan->status = $request->input('action') == 'pending' ? 'pending' : 'draft';
 
-        // Save changes with exception handling
         try {
             $aduan->save();
             return redirect()
@@ -478,12 +451,11 @@ class AduanController extends Controller
         if (auth()->user()->role_id != 1 && $aduan->user_id != auth()->id()) {
             return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menghapus aduan ini.');
         }
-        // Pastikan hanya aduan dengan status tertentu yang bisa dihapus
+
         if ($aduan->status != 'draft') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status draft yang dapat dihapus!');
         }
 
-        // Hapus file-file terkait
         if ($aduan->surat_permintaan) {
             Storage::disk('public')->delete($aduan->surat_permintaan);
         }
@@ -498,26 +470,21 @@ class AduanController extends Controller
             Storage::disk('public')->delete($aduan->screenshot);
         }
 
-        // Hapus data
         $aduan->delete();
 
         return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dihapus.');
     }
 
-    // Method baru untuk approval
     public function approve(Aduan $aduan)
     {
-        // Hanya admin dan manager yang bisa menyetujui aduan
         if (!in_array(auth()->user()->role_id, [1, 2])) {
             return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk menyetujui aduan.');
         }
 
-        // Pastikan hanya aduan dengan status onreview yang bisa disetujui
         if ($aduan->status != 'onreview') {
             return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status onreview yang dapat disetujui!');
         }
 
-        // Update status menjadi active
         $aduan->status = 'active';
         $aduan->save();
 
@@ -571,5 +538,154 @@ class AduanController extends Controller
         $aduan->save();
 
         return redirect()->route('aduan.index')->with('success', 'Review ditolak dan status dikembalikan menjadi draft.');
+    }
+
+    /**
+     * Send complaint data to external API.
+     *
+     * @param  \App\Models\Aduan  $aduan
+     * @return \Illuminate\Http\Response
+     */
+    public function sendToApi(Aduan $aduan)
+    {
+        // Check if user has appropriate role
+        if (auth()->user()->role_id != 3) {
+            return redirect()->route('aduan.index')->with('error', 'Anda tidak memiliki akses untuk melakukan tindakan ini.');
+        }
+
+        // Check if complaint status is active
+        if ($aduan->status != 'active') {
+            return redirect()->route('aduan.index')->with('error', 'Hanya aduan dengan status active yang dapat dikirim ke API!');
+        }
+
+        // Define API token and endpoint directly
+        $apiToken = $this->getApiToken(); // Replace with your actual API token
+        $apiEndpoint = 'https://instansi.aduankonten.id/api/v01/aduan'; // Replace with your actual API endpoint
+
+        // Generate signature as per requirement: md5(API_TOKEN+New)
+        $signature = md5($apiToken . 'New');
+
+        // Prepare JSON data for the body field
+        $bodyData = [
+            'ticket_id' => $aduan->ticket_id,
+            'kategori' => $aduan->kategori,
+            'prioritas' => $aduan->prioritas,
+            'nomor_surat' => $aduan->nomor_surat,
+            'catatan_tambahan' => $aduan->catatan_tambahan,
+            'url_data' => $aduan->url_data,
+        ];
+        // dd($signature);
+        try {
+            
+            // Initialize request data
+            $data = [
+                'signature' => $signature,
+                'body' => json_encode($bodyData),
+            ];
+
+            // Add docSurat (main document)
+            if ($aduan->surat_permintaan) {
+                $data['docSurat'] = Storage::disk('public')->get($aduan->surat_permintaan);
+            }
+
+            // Add lampiran files (url_data screenshots)
+            $urlData = json_decode($aduan->url_data, true);
+            if (is_array($urlData)) {
+                foreach ($urlData as $index => $url) {
+                    if (isset($url['screenshot']) && Storage::disk('public')->exists($url['screenshot'])) {
+                        $lampiranKey = $index === 0 ? 'lampiran' : 'lampiran' . ($index + 1);
+                        $data[$lampiranKey] = Storage::disk('public')->get($url['screenshot']);
+                    }
+                }
+            }
+
+            // Add pendukung files (supporting documents)
+            $dokumenPendukung = json_decode($aduan->dokumen_pendukung, true);
+            if (is_array($dokumenPendukung)) {
+                foreach ($dokumenPendukung as $index => $doc) {
+                    if (Storage::disk('public')->exists($doc)) {
+                        $pendukungKey = $index === 0 ? 'pendukung' : 'pendukung' . ($index + 1);
+                        $data[$pendukungKey] = Storage::disk('public')->get($doc);
+                    }
+                }
+            }
+            // dd($data);
+            // Make HTTP request to external API
+            $response = Http::timeout(60)
+                ->withHeaders([
+                    'Accept' => 'application/json',
+                ])
+                ->attach('docSurat', $data['docSurat'] ?? '', 'document.pdf')
+                ->asMultipart()
+                ->post($apiEndpoint, $data);
+
+                dd($response);
+            if ($response->successful()) {
+                // Log success
+                Log::info('Aduan successfully sent to API', [
+                    'ticket_id' => $aduan->ticket_id,
+                    'response' => $response->json(),
+                ]);
+
+                return redirect()->route('aduan.show', $aduan->id)->with('success', 'Aduan berhasil dikirim ke API.');
+            } else {
+                // Log failure
+                Log::error('Failed to send aduan to API', [
+                    'ticket_id' => $aduan->ticket_id,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                return redirect()
+                    ->route('aduan.show', $aduan->id)
+                    ->with('error', 'Gagal mengirim aduan ke API. Status: ' . $response->status());
+            }
+        } catch (\Exception $e) {
+            dd('GAGAL NIH');
+            Log::error('Exception when sending aduan to API', [
+                'ticket_id' => $aduan->ticket_id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->route('aduan.show', $aduan->id)
+                ->with('error', 'Terjadi kesalahan saat mengirim aduan ke API: ' . $e->getMessage());
+        }
+    }
+
+    private function getApiToken()
+    {
+        $user = Auth::user();
+        // Base URL untuk API
+        $baseUrl = 'https://instansi.aduankonten.id/api/v01';
+        
+        try {
+            // Buat request ke endpoint auth menggunakan email dan password user yang login
+            $response = Http::post($baseUrl . '/auth', [
+                'email' => $user->email,
+                'password' => 'Password123!', // Catatan: Ini mungkin perlu disesuaikan
+            ]);
+            
+            // Jika autentikasi berhasil
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                // Cek apakah respons sesuai dengan yang diharapkan
+                if (isset($data['token'])) {
+                    return $data['token'];
+                }
+                
+                // Cek struktur respons seperti contoh di gambar
+                if (isset($data['account']) && isset($data['account']['token'])) {
+                    return $data['account']['token'];
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error jika perlu
+            Log::error('API Authentication Error: ' . $e->getMessage());
+        }
+        
+        return null;
     }
 }

@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['role:petugas'])->group(function () {
             Route::put('/{aduan}/review-accept', [AduanController::class, 'reviewAccept'])->name('aduan.review-accept');
             Route::put('/{aduan}/review-reject', [AduanController::class, 'reviewReject'])->name('aduan.review-reject');
+            Route::post('/{aduan}/send-to-api', [AduanController::class, 'sendToApi'])->name('aduan.send-to-api');
         });
 
         // Show route (PENTING: tempatkan setelah semua rute spesifik)
